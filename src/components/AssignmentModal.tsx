@@ -35,8 +35,15 @@ const LAWYERS = [
   'Lic. Melissa Ortiz'
 ];
 
+const BIOMETRIC_SERIALS = [
+  'P320E09638',
+  'P320E09639', 
+  'P320E09640'
+];
+
 export default function AssignmentModal({ laptop, isReturning, onAssign, onReturn, onClose }: AssignmentModalProps) {
   const [userName, setUserName] = useState('');
+  const [biometricSerial, setBiometricSerial] = useState('');
   const [returnNotes, setReturnNotes] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredLawyers, setFilteredLawyers] = useState(LAWYERS);
@@ -66,7 +73,7 @@ export default function AssignmentModal({ laptop, isReturning, onAssign, onRetur
       onReturn(laptop.id, returnNotes);
     } else {
       if (userName.trim()) {
-        onAssign(laptop.id, userName.trim(), 'Uso general');
+        onAssign(laptop.id, userName.trim(), 'Uso general', biometricSerial);
       }
     }
   };
@@ -140,6 +147,25 @@ export default function AssignmentModal({ laptop, isReturning, onAssign, onRetur
                     </div>
                   )}
                 </div>
+              </div>
+
+              {/* Biometric Serial Selection */}
+              <div className="mb-4">
+                <label htmlFor="biometricSerial" className="block text-sm font-medium text-gray-700 mb-2">
+                  <FileText className="h-4 w-4 inline mr-1" />
+                  Número de Serie del Biométrico (Opcional)
+                </label>
+                <select
+                  id="biometricSerial"
+                  value={biometricSerial}
+                  onChange={(e) => setBiometricSerial(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
+                >
+                  <option value="">Sin biométrico asignado</option>
+                  <option value="P320E09638">P320E09638</option>
+                  <option value="P320E09639">P320E09639</option>
+                  <option value="P320E09640">P320E09640</option>
+                </select>
               </div>
 
             </>

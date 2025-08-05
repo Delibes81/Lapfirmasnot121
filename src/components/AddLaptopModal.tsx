@@ -162,14 +162,17 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
                 <Fingerprint className="h-4 w-4 inline mr-1" />
                 Número de Serie del Lector Biométrico
               </label>
-              <input
-                type="text"
+              <select
                 id="biometricSerial"
                 value={formData.biometricSerial}
-                onChange={(e) => handleInputChange('biometricSerial', e.target.value.toUpperCase())}
+                onChange={(e) => handleInputChange('biometricSerial', e.target.value)}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
-                placeholder="Ej: BIO-DL001"
-              />
+              >
+                <option value="">Seleccionar número de serie</option>
+                <option value="P320E09638">P320E09638</option>
+                <option value="P320E09639">P320E09639</option>
+                <option value="P320E09640">P320E09640</option>
+              </select>
             </div>
           )}
           {/* Actions */}

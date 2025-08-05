@@ -15,7 +15,7 @@ export default function LaptopManagement({ laptops, setLaptops, assignments, set
   const [showAssignmentModal, setShowAssignmentModal] = useState(false);
   const [isReturning, setIsReturning] = useState(false);
 
-  const handleAssign = (laptopId: string, userName: string, purpose: string) => {
+  const handleAssign = (laptopId: string, userName: string, purpose: string, biometricSerial?: string) => {
     const laptop = laptops.find(l => l.id === laptopId);
     if (!laptop) return;
 
@@ -31,7 +31,14 @@ export default function LaptopManagement({ laptops, setLaptops, assignments, set
     setAssignments([...assignments, newAssignment]);
     setLaptops(laptops.map(l => 
       l.id === laptopId 
-        ? { ...l, status: 'en-uso' as LaptopStatus, currentUser: userName, updatedAt: new Date().toISOString() }
+        ? { 
+            ...l, 
+            status: 'en-uso' as LaptopStatus, 
+            currentUser: userName, 
+            biometricReader: !!biometricSerial,
+            biometricSerial: biometricSerial || undefined,
+            updatedAt: new Date().toISOString() 
+          }
         : l
     ));
 
