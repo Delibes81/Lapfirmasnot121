@@ -10,11 +10,56 @@ interface AssignmentModalProps {
   onClose: () => void;
 }
 
+const LAWYERS = [
+  'Lic. Victor Medina',
+  'Lic. Edgar Magallan', 
+  'Lic. Cesar Rocha',
+  'Lic. Guadalupe Cruz',
+  'Lic. Arturo Aguilar',
+  'Lic. Rafael Angeles',
+  'Lic. Ivan Ramirez',
+  'Lic. Amando Mastachi',
+  'Lic. Jorge Ramirez',
+  'Lic. Humberto Montes',
+  'Lic. Andrea Suarez',
+  'Lic. Juan Moran',
+  'Lic. Neftali Gracida',
+  'Lic. Dulce Gomez',
+  'Lic. Luis Meneses',
+  'Lic. Adan Moctezuma',
+  'Lic. Renato Toledo',
+  'Lic. Armando Gomez',
+  'Lic. Jannet Delgado',
+  'Lic. Brayan Lara',
+  'Lic. Luis Manjarrez',
+  'Lic. Melissa Ortiz'
+];
+
 export default function AssignmentModal({ laptop, isReturning, onAssign, onReturn, onClose }: AssignmentModalProps) {
   const [userName, setUserName] = useState('');
   const [purpose, setPurpose] = useState('');
   const [returnNotes, setReturnNotes] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [filteredLawyers, setFilteredLawyers] = useState(LAWYERS);
 
+  const handleUserNameChange = (value: string) => {
+    setUserName(value);
+    if (value.trim()) {
+      const filtered = LAWYERS.filter(lawyer => 
+        lawyer.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredLawyers(filtered);
+      setShowSuggestions(true);
+    } else {
+      setFilteredLawyers(LAWYERS);
+      setShowSuggestions(false);
+    }
+  };
+
+  const selectLawyer = (lawyer: string) => {
+    setUserName(lawyer);
+    setShowSuggestions(false);
+  };
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -67,17 +112,35 @@ export default function AssignmentModal({ laptop, isReturning, onAssign, onRetur
               <div className="mb-4">
                 <label htmlFor="userName" className="block text-sm font-medium text-gray-700 mb-2">
                   <User className="h-4 w-4 inline mr-1" />
-                  Nombre del Pasante
+                  Nombre del Abogado
                 </label>
-                <input
-                  type="text"
-                  id="userName"
-                  value={userName}
-                  onChange={(e) => setUserName(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Ingrese el nombre completo"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    id="userName"
+                    value={userName}
+                    onChange={(e) => handleUserNameChange(e.target.value)}
+                    onFocus={() => setShowSuggestions(true)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Ej: Lic. Victor Medina"
+                    required
+                  />
+                  
+                  {showSuggestions && filteredLawyers.length > 0 && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                      {filteredLawyers.map((lawyer, index) => (
+                        <button
+                          key={index}
+                          type="button"
+                          onClick={() => selectLawyer(lawyer)}
+                          className="w-full text-left px-4 py-3 hover:bg-blue-50 hover:text-blue-700 transition-colors text-sm border-b border-gray-100 last:border-b-0"
+                        >
+                          {lawyer}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="mb-6">
