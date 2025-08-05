@@ -37,7 +37,6 @@ const LAWYERS = [
 
 export default function AssignmentModal({ laptop, isReturning, onAssign, onReturn, onClose }: AssignmentModalProps) {
   const [userName, setUserName] = useState('');
-  const [purpose, setPurpose] = useState('');
   const [returnNotes, setReturnNotes] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [filteredLawyers, setFilteredLawyers] = useState(LAWYERS);
@@ -66,8 +65,8 @@ export default function AssignmentModal({ laptop, isReturning, onAssign, onRetur
     if (isReturning) {
       onReturn(laptop.id, returnNotes);
     } else {
-      if (userName.trim() && purpose.trim()) {
-        onAssign(laptop.id, userName.trim(), purpose.trim());
+      if (userName.trim()) {
+        onAssign(laptop.id, userName.trim(), 'Uso general');
       }
     }
   };
@@ -143,21 +142,6 @@ export default function AssignmentModal({ laptop, isReturning, onAssign, onRetur
                 </div>
               </div>
 
-              <div className="mb-6">
-                <label htmlFor="purpose" className="block text-sm font-medium text-gray-700 mb-2">
-                  <FileText className="h-4 w-4 inline mr-1" />
-                  Propósito/Destino
-                </label>
-                <input
-                  type="text"
-                  id="purpose"
-                  value={purpose}
-                  onChange={(e) => setPurpose(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Ej: Firma en notaría, reunión con cliente"
-                  required
-                />
-              </div>
             </>
           ) : (
             <div className="mb-6">
@@ -191,7 +175,7 @@ export default function AssignmentModal({ laptop, isReturning, onAssign, onRetur
             </button>
             <button
               type="submit"
-              disabled={!isReturning && (!userName.trim() || !purpose.trim())}
+              disabled={!isReturning && !userName.trim()}
               className={`flex-1 px-4 py-3 rounded-xl text-white font-medium transition-all shadow-sm hover:shadow-md ${
                 isReturning
                   ? 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700'

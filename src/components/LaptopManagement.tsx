@@ -23,7 +23,7 @@ export default function LaptopManagement({ laptops, setLaptops, assignments, set
       id: Date.now().toString(),
       laptopId,
       userName,
-      purpose,
+      purpose: 'Uso general',
       assignedAt: new Date().toISOString(),
       returnedAt: null,
     };
