@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Laptop } from '../types';
 import LaptopCard from './LaptopCard';
+import EditLaptopModal from './EditLaptopModal';
 
 interface LaptopManagementProps {
   laptops: Laptop[];
@@ -9,7 +10,21 @@ interface LaptopManagementProps {
 }
 
 export default function LaptopManagement({ laptops, setLaptops, onDataChange }: LaptopManagementProps) {
+  const [editingLaptop, setEditingLaptop] = useState<Laptop | null>(null);
+  
   const totalLaptops = laptops.length;
+
+  const handleEditLaptop = (laptop: Laptop) => {
+    setEditingLaptop(laptop);
+  };
+
+  const handleUpdateLaptop = (updatedLaptop: Laptop) => {
+    setLaptops(prev => prev.map(laptop => 
+      laptop.id === updatedLaptop.id ? updatedLaptop : laptop
+    ));
+    setEditingLaptop(null);
+    onDataChange();
+  };
 
   return (
     <div className="space-y-8">
@@ -32,9 +47,21 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
           <LaptopCard
             key={laptop.id}
             laptop={laptop}
+            onEdit={handleEditLaptop}
+            showEditButton={true}
           />
         ))}
       </div>
+
+      {/* Edit Laptop Modal */}
+      {editingLaptop && (
+        <EditLaptopModal
+          laptop={editingLaptop}
+          onUpdate={handleUpdateLaptop}
+          onClose={() => setEditingLaptop(null)}
+          existingLaptops={laptops}
+        />
+      )}
     </div>
   );
 }

@@ -1,12 +1,14 @@
 import React from 'react';
-import { Laptop } from 'lucide-react';
+import { Laptop, Edit3 } from 'lucide-react';
 import { Laptop as LaptopType } from '../types';
 
 interface LaptopCardProps {
   laptop: LaptopType;
+  onEdit?: (laptop: LaptopType) => void;
+  showEditButton?: boolean;
 }
 
-export default function LaptopCard({ laptop }: LaptopCardProps) {
+export default function LaptopCard({ laptop, onEdit, showEditButton = false }: LaptopCardProps) {
   return (
     <div className="group bg-white/80 backdrop-blur-md rounded-3xl shadow-lg border border-gray-200/50 p-6 hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 relative overflow-hidden">
       {/* Background Gradient */}
@@ -22,6 +24,16 @@ export default function LaptopCard({ laptop }: LaptopCardProps) {
             <p className="text-sm text-gray-600 font-medium">{laptop.brand} {laptop.model}</p>
           </div>
         </div>
+        
+        {showEditButton && onEdit && (
+          <button
+            onClick={() => onEdit(laptop)}
+            className="opacity-0 group-hover:opacity-100 transition-all duration-300 p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl hover:bg-indigo-50 hover:text-indigo-600 text-gray-600"
+            title="Editar laptop"
+          >
+            <Edit3 className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       <div className="relative space-y-3 mb-6">
