@@ -54,7 +54,7 @@ export const laptopService = {
         biometric_reader: laptop.biometricReader,
         biometric_serial: laptop.biometricSerial,
         status: laptop.status,
-        current_user: laptop.currentUser
+        assigned_user: laptop.currentUser
       })
       .select()
       .single();
