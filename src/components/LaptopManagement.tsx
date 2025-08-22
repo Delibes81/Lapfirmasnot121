@@ -100,10 +100,11 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
       setLaptops(prev => prev.map(laptop => 
         laptop.id === laptopId ? updatedLaptop : laptop
       ));
-      onDataChange();
     } catch (error) {
       console.error('Error assigning laptop:', error);
       alert('Error al asignar la laptop. Por favor, inténtalo de nuevo.');
+    } finally {
+      onDataChange();
     }
   };
 
