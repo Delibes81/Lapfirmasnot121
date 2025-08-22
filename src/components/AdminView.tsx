@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Plus, History, Settings, Fingerprint, Users } from 'lucide-react';
+import { Plus, History, Settings, Fingerprint, Users, UserPlus } from 'lucide-react';
 import LaptopManagement from './LaptopManagement';
 import HistoryPanel from './HistoryPanel';
 import BiometricManagement from './BiometricManagement';
 import LawyerManagement from './LawyerManagement';
+import AssignmentSection from './AssignmentSection';
 import AddLaptopModal from './AddLaptopModal';
 import { Laptop } from '../types';
 
@@ -13,7 +14,7 @@ interface AdminViewProps {
   onDataChange: () => void;
 }
 
-type AdminTab = 'management' | 'biometric' | 'lawyers' | 'history';
+type AdminTab = 'management' | 'assignment' | 'biometric' | 'lawyers' | 'history';
 
 export default function AdminView({ laptops, setLaptops, onDataChange }: AdminViewProps) {
   const [activeTab, setActiveTab] = useState<AdminTab>('management');
@@ -66,6 +67,17 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
             Gestión de Equipos
           </button>
           <button
+            onClick={() => setActiveTab('assignment')}
+            className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              activeTab === 'assignment'
+                ? 'bg-white text-blue-700 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            Asignaciones
+          </button>
+          <button
             onClick={() => setActiveTab('biometric')}
             className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'biometric'
@@ -106,6 +118,11 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
         <LaptopManagement 
           laptops={laptops}
           setLaptops={setLaptops}
+          onDataChange={onDataChange}
+        />
+      ) : activeTab === 'assignment' ? (
+        <AssignmentSection 
+          laptops={laptops}
           onDataChange={onDataChange}
         />
       ) : activeTab === 'biometric' ? (
