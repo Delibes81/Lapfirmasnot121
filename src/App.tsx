@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Shield, Eye, Settings } from 'lucide-react';
 import PublicView from './components/PublicView';
 import AdminView from './components/AdminView';
-import { Laptop, Assignment, ViewMode } from './types';
-import { laptopService, assignmentService } from './services/laptopService';
+import { Laptop, ViewMode } from './types';
+import { laptopService } from './services/laptopService';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('public');
   const [laptops, setLaptops] = useState<Laptop[]>([]);
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -22,13 +21,9 @@ function App() {
       setLoading(true);
       setError(null);
       
-      const [laptopsData, assignmentsData] = await Promise.all([
-        laptopService.getAllLaptops(),
-        assignmentService.getAllAssignments()
-      ]);
+      const laptopsData = await laptopService.getAllLaptops();
       
       setLaptops(laptopsData);
-      setAssignments(assignmentsData);
     } catch (err) {
       console.error('Error loading data:', err);
       setError('Error al cargar los datos. Por favor, verifica tu conexión a Supabase.');
@@ -147,8 +142,6 @@ function App() {
           <AdminView 
             laptops={laptops}
             setLaptops={setLaptops}
-            assignments={assignments}
-            setAssignments={setAssignments}
             onDataChange={refreshData}
           />
         )}
