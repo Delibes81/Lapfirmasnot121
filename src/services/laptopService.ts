@@ -194,6 +194,3 @@ export const laptopService = {
     return mapLaptopFromDB(data[0]);
   }
 };
-    // Normalizar el ID para evitar problemas de espacios y mayúsculas/minúsculas
-    const normalizedId = id.trim().toUpperCase();
-    
