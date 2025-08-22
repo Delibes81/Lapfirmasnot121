@@ -14,4 +14,11 @@ export interface BiometricDevice {
   updatedAt: string;
 }
 
+export interface Lawyer {
+  id: string;
+  name: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type ViewMode = 'public' | 'admin';

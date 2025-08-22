@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Plus, History, Settings, Fingerprint } from 'lucide-react';
+import { Plus, History, Settings, Fingerprint, Users } from 'lucide-react';
 import LaptopManagement from './LaptopManagement';
 import HistoryPanel from './HistoryPanel';
 import BiometricManagement from './BiometricManagement';
+import LawyerManagement from './LawyerManagement';
 import AddLaptopModal from './AddLaptopModal';
-import { Laptop, Assignment } from '../types';
+import { Laptop } from '../types';
 
 interface AdminViewProps {
   laptops: Laptop[];
@@ -12,7 +13,7 @@ interface AdminViewProps {
   onDataChange: () => void;
 }
 
-type AdminTab = 'management' | 'biometric' | 'history';
+type AdminTab = 'management' | 'biometric' | 'lawyers' | 'history';
 
 export default function AdminView({ laptops, setLaptops, onDataChange }: AdminViewProps) {
   const [activeTab, setActiveTab] = useState<AdminTab>('management');
@@ -76,6 +77,17 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
             Biométricos
           </button>
           <button
+            onClick={() => setActiveTab('lawyers')}
+            className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              activeTab === 'lawyers'
+                ? 'bg-white text-blue-700 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Users className="h-4 w-4 mr-2" />
+            Personas
+          </button>
+          <button
             onClick={() => setActiveTab('history')}
             className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'history'
@@ -98,6 +110,8 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
         />
       ) : activeTab === 'biometric' ? (
         <BiometricManagement />
+      ) : activeTab === 'lawyers' ? (
+        <LawyerManagement />
       ) : (
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/50 shadow-sm">
           <p className="text-center text-gray-500">Historial no disponible sin tabla de asignaciones</p>
