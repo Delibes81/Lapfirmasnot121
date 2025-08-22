@@ -107,6 +107,18 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
     }
   };
 
+  const handleMaintenanceToggle = async (laptopId: string, inMaintenance: boolean) => {
+    try {
+      const updatedLaptop = await laptopService.setMaintenanceStatus(laptopId, inMaintenance);
+      setLaptops(prev => prev.map(laptop => 
+        laptop.id === laptopId ? updatedLaptop : laptop
+      ));
+      onDataChange();
+    } catch (error) {
+      console.error('Error updating maintenance status:', error);
+      alert('Error al cambiar el estado de mantenimiento. Por favor, inténtalo de nuevo.');
+    }
+  };
   return (
     <div className="space-y-8">
       {/* Stats */}
@@ -172,9 +184,11 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
             onAssign={handleAssignLaptop}
             onReturn={handleReturnLaptop}
             onQuickAssign={handleQuickAssign}
+            onMaintenanceToggle={handleMaintenanceToggle}
             showEditButton={true}
             showAssignButton={true}
             showQuickAssign={true}
+            showMaintenanceButton={true}
           />
         ))}
       </div>

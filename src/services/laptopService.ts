@@ -112,29 +112,19 @@ export const laptopService = {
         assigned_at: new Date().toISOString()
       })
       .eq('id', id)
-      .select();
+      .select()
+      .single();
 
     if (error) {
       console.error('Error assigning laptop:', error);
       throw error;
     }
 
-    // If update didn't return data, fetch the laptop separately
-    if (!data || data.length === 0) {
-      const { data: fetchedData, error: fetchError } = await supabase
-        .from('laptops')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (fetchError || !fetchedData) {
-        throw new Error(`Laptop with id ${id} not found`);
-      }
-
-      return mapLaptopFromDB(fetchedData);
+    if (!data) {
+      throw new Error(`Laptop with id ${id} not found`);
     }
 
-    return mapLaptopFromDB(data[0]);
+    return mapLaptopFromDB(data);
   },
 
   // Devolver laptop (liberar asignación)
@@ -148,28 +138,49 @@ export const laptopService = {
         assigned_at: null
       })
       .eq('id', id)
-      .select();
+      .select()
+      .single();
 
     if (error) {
       console.error('Error returning laptop:', error);
       throw error;
     }
 
-    // If update didn't return data, fetch the laptop separately
-    if (!data || data.length === 0) {
-      const { data: fetchedData, error: fetchError } = await supabase
-        .from('laptops')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (fetchError || !fetchedData) {
-        throw new Error(`Laptop with id ${id} not found`);
-      }
-
-      return mapLaptopFromDB(fetchedData);
+    if (!data) {
+      throw new Error(`Laptop with id ${id} not found`);
     }
 
-    return mapLaptopFromDB(data[0]);
+    return mapLaptopFromDB(data);
+  },
+
+  // Cambiar estado a mantenimiento
+  async setMaintenanceStatus(id: string, inMaintenance: boolean): Promise<Laptop> {
+    const status = inMaintenance ? 'mantenimiento' : 'disponible';
+    const updateData: any = { status };
+    
+    // Si se pone en mantenimiento, limpiar asignación
+    if (inMaintenance) {
+      updateData.assigned_user = null;
+      updateData.biometric_serial = null;
+      updateData.assigned_at = null;
+    }
+
+    const { data, error } = await supabase
+      .from('laptops')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating maintenance status:', error);
+      throw error;
+    }
+
+    if (!data) {
+      throw new Error(`Laptop with id ${id} not found`);
+    }
+
+    return mapLaptopFromDB(data);
   }
 };
