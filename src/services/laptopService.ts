@@ -7,10 +7,6 @@ const mapLaptopFromDB = (dbLaptop: any): Laptop => ({
   brand: dbLaptop.brand,
   model: dbLaptop.model,
   serialNumber: dbLaptop.serial_number,
-  status: dbLaptop.status || 'disponible',
-  currentUser: dbLaptop.current_user,
-  biometricReader: dbLaptop.biometric_reader || false,
-  biometricSerial: dbLaptop.biometric_serial,
   createdAt: dbLaptop.created_at,
   updatedAt: dbLaptop.updated_at
 });
@@ -38,10 +34,6 @@ export const laptopService = {
     brand: string; 
     model: string; 
     serialNumber: string;
-    status?: 'disponible' | 'en-uso' | 'mantenimiento';
-    currentUser?: string;
-    biometricReader?: boolean;
-    biometricSerial?: string;
   }): Promise<Laptop> {
     const { data, error } = await supabase
       .from('laptops')
@@ -49,11 +41,7 @@ export const laptopService = {
         id: laptop.id,
         brand: laptop.brand,
         model: laptop.model,
-        serial_number: laptop.serialNumber,
-        status: laptop.status || 'disponible',
-        current_user: laptop.currentUser,
-        biometric_reader: laptop.biometricReader || false,
-        biometric_serial: laptop.biometricSerial
+        serial_number: laptop.serialNumber
       })
       .select()
       .single();
@@ -73,10 +61,6 @@ export const laptopService = {
     if (updates.brand !== undefined) dbUpdates.brand = updates.brand;
     if (updates.model !== undefined) dbUpdates.model = updates.model;
     if (updates.serialNumber !== undefined) dbUpdates.serial_number = updates.serialNumber;
-    if (updates.status !== undefined) dbUpdates.status = updates.status;
-    if (updates.currentUser !== undefined) dbUpdates.current_user = updates.currentUser;
-    if (updates.biometricReader !== undefined) dbUpdates.biometric_reader = updates.biometricReader;
-    if (updates.biometricSerial !== undefined) dbUpdates.biometric_serial = updates.biometricSerial;
 
     const { data, error } = await supabase
       .from('laptops')
