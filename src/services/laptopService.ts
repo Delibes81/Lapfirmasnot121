@@ -10,7 +10,7 @@ const mapLaptopFromDB = (dbLaptop: any): Laptop => ({
   biometricReader: dbLaptop.biometric_reader,
   biometricSerial: dbLaptop.biometric_serial,
   status: dbLaptop.status,
-  currentUser: dbLaptop.current_user,
+  currentUser: dbLaptop.assigned_user,
   createdAt: dbLaptop.created_at,
   updatedAt: dbLaptop.updated_at
 });
@@ -77,7 +77,7 @@ export const laptopService = {
     if (updates.biometricReader !== undefined) dbUpdates.biometric_reader = updates.biometricReader;
     if (updates.biometricSerial !== undefined) dbUpdates.biometric_serial = updates.biometricSerial;
     if (updates.status !== undefined) dbUpdates.status = updates.status;
-    if (updates.currentUser !== undefined) dbUpdates.current_user = updates.currentUser;
+    if (updates.currentUser !== undefined) dbUpdates.assigned_user = updates.currentUser;
 
     const { data, error } = await supabase
       .from('laptops')

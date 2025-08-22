@@ -18,7 +18,7 @@ export interface Database {
           biometric_reader: boolean
           biometric_serial: string | null
           status: 'disponible' | 'en-uso' | 'mantenimiento'
-          current_user: string | null
+          assigned_user: string | null
           created_at: string
           updated_at: string
         }
@@ -30,7 +30,7 @@ export interface Database {
           biometric_reader?: boolean
           biometric_serial?: string | null
           status?: 'disponible' | 'en-uso' | 'mantenimiento'
-          current_user?: string | null
+          assigned_user?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -42,7 +42,7 @@ export interface Database {
           biometric_reader?: boolean
           biometric_serial?: string | null
           status?: 'disponible' | 'en-uso' | 'mantenimiento'
-          current_user?: string | null
+          assigned_user?: string | null
           created_at?: string
           updated_at?: string
         }
