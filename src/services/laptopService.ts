@@ -59,6 +59,9 @@ export const laptopService = {
 
   // Actualizar laptop
   async updateLaptop(id: string, updates: Partial<Laptop>): Promise<Laptop> {
+    // Normalizar el ID para evitar problemas de espacios y mayúsculas/minúsculas
+    const normalizedId = id.trim().toUpperCase();
+    
     const dbUpdates: any = {};
     
     if (updates.brand !== undefined) dbUpdates.brand = updates.brand;
