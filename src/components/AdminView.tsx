@@ -121,9 +121,16 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
       ) : activeTab === 'lawyers' ? (
         <LawyerManagement />
       ) : (
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/50 shadow-sm">
-          <p className="text-center text-gray-500">Historial no disponible sin tabla de asignaciones</p>
-        </div>
+        assignmentsLoading ? (
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/50 shadow-sm">
+            <div className="flex items-center justify-center">
+              <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mr-3"></div>
+              <p className="text-gray-600">Cargando historial...</p>
+            </div>
+          </div>
+        ) : (
+          <HistoryPanel laptops={laptops} assignments={assignments} />
+        )
       )}
 
       {/* Add Laptop Modal */}

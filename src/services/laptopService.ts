@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabase';
 import { Laptop } from '../types';
+import { assignmentService } from './assignmentService';
 
 // Convertir datos de Supabase a tipos de la aplicación
 const mapLaptopFromDB = (dbLaptop: any): Laptop => ({
@@ -110,27 +111,40 @@ export const laptopService = {
     // Normalizar el ID para evitar problemas de espacios y mayúsculas/minúsculas
     const normalizedId = id.trim().toUpperCase();
     
-    const { data, error } = await supabase
-      .from('laptops')
-      .update({
-        status: 'en-uso',
-        assigned_user: userName,
-        biometric_serial: biometricSerial || null,
-        assigned_at: new Date().toISOString()
-      })
-      .eq('id', normalizedId)
-      .select();
+    try {
+      // Actualizar laptop
+      const { data, error } = await supabase
+        .from('laptops')
+        .update({
+          status: 'en-uso',
+          assigned_user: userName,
+          biometric_serial: biometricSerial || null,
+          assigned_at: new Date().toISOString()
+        })
+        .eq('id', normalizedId)
+        .select();
 
-    if (error) {
-      console.error('Error assigning laptop:', error);
+      if (error) {
+        console.error('Error assigning laptop:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        throw new Error(`Laptop with id ${normalizedId} not found`);
+      }
+
+      // Crear registro de asignación en el historial
+      await assignmentService.createAssignment({
+        laptopId: normalizedId,
+        userName,
+        biometricSerial
+      });
+
+      return mapLaptopFromDB(data[0]);
+    } catch (error) {
+      console.error('Error in assignLaptop:', error);
       throw error;
     }
-
-    if (!data || data.length === 0) {
-      throw new Error(`Laptop with id ${normalizedId} not found`);
-    }
-
-    return mapLaptopFromDB(data[0]);
   },
 
   // Devolver laptop (liberar asignación)
@@ -138,27 +152,36 @@ export const laptopService = {
     // Normalizar el ID para evitar problemas de espacios y mayúsculas/minúsculas
     const normalizedId = id.trim().toUpperCase();
     
-    const { data, error } = await supabase
-      .from('laptops')
-      .update({
-        status: 'disponible',
-        assigned_user: null,
-        biometric_serial: null,
-        assigned_at: null
-      })
-      .eq('id', normalizedId)
-      .select();
+    try {
+      // Marcar asignación como devuelta en el historial
+      await assignmentService.returnAssignment(normalizedId);
 
-    if (error) {
-      console.error('Error returning laptop:', error);
+      // Actualizar laptop
+      const { data, error } = await supabase
+        .from('laptops')
+        .update({
+          status: 'disponible',
+          assigned_user: null,
+          biometric_serial: null,
+          assigned_at: null
+        })
+        .eq('id', normalizedId)
+        .select();
+
+      if (error) {
+        console.error('Error returning laptop:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        throw new Error(`Laptop with id ${normalizedId} not found`);
+      }
+
+      return mapLaptopFromDB(data[0]);
+    } catch (error) {
+      console.error('Error in returnLaptop:', error);
       throw error;
     }
-
-    if (!data || data.length === 0) {
-      throw new Error(`Laptop with id ${normalizedId} not found`);
-    }
-
-    return mapLaptopFromDB(data[0]);
   },
 
   // Cambiar estado a mantenimiento
@@ -171,6 +194,14 @@ export const laptopService = {
     
     // Si se pone en mantenimiento, limpiar asignación
     if (inMaintenance) {
+      // Marcar asignación activa como devuelta si existe
+      try {
+        await assignmentService.returnAssignment(normalizedId);
+      } catch (error) {
+        // No hay problema si no hay asignación activa
+        console.log('No active assignment to return for maintenance');
+      }
+      
       updateData.assigned_user = null;
       updateData.biometric_serial = null;
       updateData.assigned_at = null;

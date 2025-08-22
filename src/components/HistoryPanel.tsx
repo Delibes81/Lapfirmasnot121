@@ -18,7 +18,7 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
       const laptop = laptops.find(l => l.id === assignment.laptopId);
       const matchesSearch = 
         assignment.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        assignment.purpose.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (assignment.biometricSerial && assignment.biometricSerial.toLowerCase().includes(searchTerm.toLowerCase())) ||
         laptop?.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
         assignment.laptopId.toLowerCase().includes(searchTerm.toLowerCase());
       
@@ -191,7 +191,7 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
                   Usuario
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Propósito
+                  Biométrico
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Asignación

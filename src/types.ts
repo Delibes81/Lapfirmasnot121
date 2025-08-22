@@ -25,4 +25,15 @@ export interface Lawyer {
   updatedAt: string;
 }
 
+export interface Assignment {
+  id: string;
+  laptopId: string;
+  userName: string;
+  biometricSerial: string | null;
+  assignedAt: string;
+  returnedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type ViewMode = 'public' | 'admin';
