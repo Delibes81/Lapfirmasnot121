@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { X, Laptop, Building, Hash, Fingerprint } from 'lucide-react';
 import { Laptop as LaptopType } from '../types';
+import { laptopService } from '../services/laptopService';
 
 interface AddLaptopModalProps {
-  onAdd: (laptop: Omit<LaptopType, 'id' | 'status' | 'currentUser' | 'createdAt' | 'updatedAt'>) => void;
+  onAdd: (laptop: LaptopType) => void;
   onClose: () => void;
   existingLaptops: LaptopType[];
 }
@@ -40,11 +41,28 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (validateForm()) {
-      onAdd(formData);
+    if (!validateForm()) return;
+
+    try {
+      const newLaptop: Omit<LaptopType, 'createdAt' | 'updatedAt'> = {
+        id: `LT-${String(existingLaptops.length + 1).padStart(3, '0')}`,
+        brand: formData.brand,
+        model: formData.model,
+        serialNumber: formData.serialNumber,
+        biometricReader: formData.biometricReader,
+        biometricSerial: formData.biometricReader ? formData.biometricSerial : undefined,
+        status: 'disponible',
+        currentUser: null
+      };
+
+      const createdLaptop = await laptopService.createLaptop(newLaptop);
+      onAdd(createdLaptop);
+    } catch (error) {
+      console.error('Error creating laptop:', error);
+      alert('Error al crear la laptop. Por favor, inténtalo de nuevo.');
     }
   };
 

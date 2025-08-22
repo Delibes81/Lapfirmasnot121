@@ -10,11 +10,12 @@ interface AdminViewProps {
   setLaptops: React.Dispatch<React.SetStateAction<Laptop[]>>;
   assignments: Assignment[];
   setAssignments: React.Dispatch<React.SetStateAction<Assignment[]>>;
+  onDataChange: () => void;
 }
 
 type AdminTab = 'management' | 'history';
 
-export default function AdminView({ laptops, setLaptops, assignments, setAssignments }: AdminViewProps) {
+export default function AdminView({ laptops, setLaptops, assignments, setAssignments, onDataChange }: AdminViewProps) {
   const [activeTab, setActiveTab] = useState<AdminTab>('management');
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -85,6 +86,7 @@ export default function AdminView({ laptops, setLaptops, assignments, setAssignm
           setLaptops={setLaptops}
           assignments={assignments}
           setAssignments={setAssignments}
+          onDataChange={onDataChange}
         />
       ) : (
         <HistoryPanel laptops={laptops} assignments={assignments} />

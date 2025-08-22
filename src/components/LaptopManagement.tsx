@@ -2,25 +2,134 @@ import React, { useState } from 'react';
 import { Laptop, Assignment, LaptopStatus } from '../types';
 import LaptopCard from './LaptopCard';
 import AssignmentModal from './AssignmentModal';
+import { laptopService, assignmentService } from '../services/laptopService';
 
 interface LaptopManagementProps {
   laptops: Laptop[];
   setLaptops: React.Dispatch<React.SetStateAction<Laptop[]>>;
   assignments: Assignment[];
   setAssignments: React.Dispatch<React.SetStateAction<Assignment[]>>;
+  onDataChange: () => void;
 }
 
-export default function LaptopManagement({ laptops, setLaptops, assignments, setAssignments }: LaptopManagementProps) {
+export default function LaptopManagement({ laptops, setLaptops, assignments, setAssignments, onDataChange }: LaptopManagementProps) {
   const [selectedLaptop, setSelectedLaptop] = useState<Laptop | null>(null);
   const [showAssignmentModal, setShowAssignmentModal] = useState(false);
   const [isReturning, setIsReturning] = useState(false);
 
-  const handleAssign = (laptopId: string, userName: string, purpose: string, biometricSerial?: string) => {
+  const handleAssign = async (laptopId: string, userName: string, purpose: string, biometricSerial?: string) => {
     const laptop = laptops.find(l => l.id === laptopId);
     if (!laptop) return;
 
-    const newAssignment: Assignment = {
-      id: Date.now().toString(),
+    try {
+      // Crear la asignación en la base de datos
+      const newAssignment = await assignmentService.createAssignment({
+        laptopId,
+        userName,
+        purpose: 'Uso general',
+        assignedAt: new Date().toISOString(),
+        returnedAt: null,
+      });
+
+      // Actualizar el estado de la laptop
+      await laptopService.updateLaptop(laptopId, {
+        status: 'en-uso' as LaptopStatus,
+        currentUser: userName,
+        biometricReader: !!biometricSerial,
+        biometricSerial: biometricSerial || undefined,
+      });
+
+      // Actualizar el estado local
+      setAssignments([...assignments, newAssignment]);
+      setLaptops(laptops.map(l => 
+        l.id === laptopId 
+          ? { 
+              ...l, 
+              status: 'en-uso' as LaptopStatus, 
+              currentUser: userName, 
+              biometricReader: !!biometricSerial,
+              biometricSerial: biometricSerial || undefined,
+              updatedAt: new Date().toISOString() 
+            }
+          : l
+      ));
+
+      setShowAssignmentModal(false);
+      setSelectedLaptop(null);
+      onDataChange(); // Refrescar datos
+    } catch (error) {
+      console.error('Error assigning laptop:', error);
+      alert('Error al asignar la laptop. Por favor, inténtalo de nuevo.');
+    }
+  };
+
+  const handleReturn = async (laptopId: string, notes?: string) => {
+    const activeAssignment = assignments.find(a => 
+      a.laptopId === laptopId && !a.returnedAt
+    );
+
+    if (!activeAssignment) return;
+
+    try {
+      // Actualizar la asignación en la base de datos
+      await assignmentService.updateAssignment(activeAssignment.id, {
+        returnedAt: new Date().toISOString(),
+        returnNotes: notes
+      });
+
+      // Actualizar el estado de la laptop
+      await laptopService.updateLaptop(laptopId, {
+        status: 'disponible' as LaptopStatus,
+        currentUser: null
+      });
+
+      // Actualizar el estado local
+      setAssignments(assignments.map(a => 
+        a.id === activeAssignment.id 
+          ? { ...a, returnedAt: new Date().toISOString(), returnNotes: notes }
+          : a
+      ));
+
+      setLaptops(laptops.map(l => 
+        l.id === laptopId 
+          ? { ...l, status: 'disponible' as LaptopStatus, currentUser: null, updatedAt: new Date().toISOString() }
+          : l
+      ));
+
+      setShowAssignmentModal(false);
+      setSelectedLaptop(null);
+      setIsReturning(false);
+      onDataChange(); // Refrescar datos
+    } catch (error) {
+      console.error('Error returning laptop:', error);
+      alert('Error al devolver la laptop. Por favor, inténtalo de nuevo.');
+    }
+  };
+
+  const handleStatusChange = async (laptopId: string, newStatus: LaptopStatus) => {
+    try {
+      await laptopService.updateLaptop(laptopId, {
+        status: newStatus,
+        currentUser: newStatus === 'disponible' ? null : laptops.find(l => l.id === laptopId)?.currentUser
+      });
+
+      setLaptops(laptops.map(l => 
+        l.id === laptopId 
+          ? { 
+              ...l, 
+              status: newStatus, 
+              currentUser: newStatus === 'disponible' ? null : l.currentUser,
+              updatedAt: new Date().toISOString()
+            }
+          : l
+      ));
+
+      onDataChange(); // Refrescar datos
+    } catch (error) {
+      console.error('Error updating laptop status:', error);
+      alert('Error al actualizar el estado de la laptop. Por favor, inténtalo de nuevo.');
+    }
+  };
       laptopId,
       userName,
       purpose: 'Uso general',
