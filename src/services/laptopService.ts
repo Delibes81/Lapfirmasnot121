@@ -72,7 +72,7 @@ export const laptopService = {
     const { data, error } = await supabase
       .from('laptops')
       .update(dbUpdates)
-      .eq('id', id)
+      .eq('id', normalizedId)
       .select();
 
     if (error) {
@@ -81,7 +81,7 @@ export const laptopService = {
     }
 
     if (!data || data.length === 0) {
-      throw new Error(`Laptop with id ${id} not found`);
+      throw new Error(`Laptop with id ${normalizedId} not found`);
     }
 
     return mapLaptopFromDB(data[0]);
@@ -89,10 +89,13 @@ export const laptopService = {
 
   // Eliminar laptop
   async deleteLaptop(id: string): Promise<void> {
+    // Normalizar el ID para evitar problemas de espacios y mayúsculas/minúsculas
+    const normalizedId = id.trim().toUpperCase();
+    
     const { error } = await supabase
       .from('laptops')
       .delete()
-      .eq('id', id);
+      .eq('id', normalizedId);
 
     if (error) {
       console.error('Error deleting laptop:', error);
@@ -101,6 +104,9 @@ export const laptopService = {
   },
   // Asignar laptop a usuario
   async assignLaptop(id: string, userName: string, biometricSerial?: string): Promise<Laptop> {
+    // Normalizar el ID para evitar problemas de espacios y mayúsculas/minúsculas
+    const normalizedId = id.trim().toUpperCase();
+    
     const { data, error } = await supabase
       .from('laptops')
       .update({
@@ -109,7 +115,7 @@ export const laptopService = {
         biometric_serial: biometricSerial || null,
         assigned_at: new Date().toISOString()
       })
-      .eq('id', id)
+      .eq('id', normalizedId)
       .select();
 
     if (error) {
@@ -118,7 +124,7 @@ export const laptopService = {
     }
 
     if (!data || data.length === 0) {
-      throw new Error(`Laptop with id ${id} not found`);
+      throw new Error(`Laptop with id ${normalizedId} not found`);
     }
 
     return mapLaptopFromDB(data[0]);
@@ -126,6 +132,9 @@ export const laptopService = {
 
   // Devolver laptop (liberar asignación)
   async returnLaptop(id: string): Promise<Laptop> {
+    // Normalizar el ID para evitar problemas de espacios y mayúsculas/minúsculas
+    const normalizedId = id.trim().toUpperCase();
+    
     const { data, error } = await supabase
       .from('laptops')
       .update({
@@ -134,7 +143,7 @@ export const laptopService = {
         biometric_serial: null,
         assigned_at: null
       })
-      .eq('id', id)
+      .eq('id', normalizedId)
       .select();
 
     if (error) {
@@ -143,7 +152,7 @@ export const laptopService = {
     }
 
     if (!data || data.length === 0) {
-      throw new Error(`Laptop with id ${id} not found`);
+      throw new Error(`Laptop with id ${normalizedId} not found`);
     }
 
     return mapLaptopFromDB(data[0]);
@@ -151,6 +160,9 @@ export const laptopService = {
 
   // Cambiar estado a mantenimiento
   async setMaintenanceStatus(id: string, inMaintenance: boolean): Promise<Laptop> {
+    // Normalizar el ID para evitar problemas de espacios y mayúsculas/minúsculas
+    const normalizedId = id.trim().toUpperCase();
+    
     const status = inMaintenance ? 'mantenimiento' : 'disponible';
     const updateData: any = { status };
     
@@ -164,7 +176,7 @@ export const laptopService = {
     const { data, error } = await supabase
       .from('laptops')
       .update(updateData)
-      .eq('id', id)
+      .eq('id', normalizedId)
       .select();
 
     if (error) {
@@ -173,9 +185,12 @@ export const laptopService = {
     }
 
     if (!data || data.length === 0) {
-      throw new Error(`Laptop with id ${id} not found`);
+      throw new Error(`Laptop with id ${normalizedId} not found`);
     }
 
     return mapLaptopFromDB(data[0]);
   }
 };
+    // Normalizar el ID para evitar problemas de espacios y mayúsculas/minúsculas
+    const normalizedId = id.trim().toUpperCase();
+    
