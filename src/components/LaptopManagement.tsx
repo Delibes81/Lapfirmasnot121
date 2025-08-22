@@ -2,17 +2,15 @@ import React, { useState } from 'react';
 import { Laptop, Assignment, LaptopStatus } from '../types';
 import LaptopCard from './LaptopCard';
 import AssignmentModal from './AssignmentModal';
-import { laptopService, assignmentService } from '../services/laptopService';
+import { laptopService } from '../services/laptopService';
 
 interface LaptopManagementProps {
   laptops: Laptop[];
   setLaptops: React.Dispatch<React.SetStateAction<Laptop[]>>;
-  assignments: Assignment[];
-  setAssignments: React.Dispatch<React.SetStateAction<Assignment[]>>;
   onDataChange: () => void;
 }
 
-export default function LaptopManagement({ laptops, setLaptops, assignments, setAssignments, onDataChange }: LaptopManagementProps) {
+export default function LaptopManagement({ laptops, setLaptops, onDataChange }: LaptopManagementProps) {
   const [selectedLaptop, setSelectedLaptop] = useState<Laptop | null>(null);
   const [showAssignmentModal, setShowAssignmentModal] = useState(false);
   const [isReturning, setIsReturning] = useState(false);
@@ -22,35 +20,10 @@ export default function LaptopManagement({ laptops, setLaptops, assignments, set
     if (!laptop) return;
 
     try {
-      // Crear la asignación en la base de datos
-      const newAssignment = await assignmentService.createAssignment({
-        laptopId,
-        userName,
-        purpose: 'Uso general',
-        assignedAt: new Date().toISOString(),
-        returnedAt: null,
-      });
-
-      // Actualizar el estado de la laptop
-      await laptopService.updateLaptop(laptopId, {
-        status: 'en-uso' as LaptopStatus,
-        currentUser: userName,
-        biometricReader: !!biometricSerial,
-        biometricSerial: biometricSerial || undefined,
-      });
-
-      // Actualizar el estado local
-      setAssignments([...assignments, newAssignment]);
+      // Actualizar la laptop
       setLaptops(laptops.map(l => 
         l.id === laptopId 
-          ? { 
-              ...l, 
-              status: 'en-uso' as LaptopStatus, 
-              currentUser: userName, 
-              biometricReader: !!biometricSerial,
-              biometricSerial: biometricSerial || undefined,
-              updatedAt: new Date().toISOString() 
-            }
+          ? { ...l, updatedAt: new Date().toISOString() }
           : l
       ));
 
@@ -64,35 +37,11 @@ export default function LaptopManagement({ laptops, setLaptops, assignments, set
   };
 
   const handleReturn = async (laptopId: string, notes?: string) => {
-    const activeAssignment = assignments.find(a => 
-      a.laptopId === laptopId && !a.returnedAt
-    );
-
-    if (!activeAssignment) return;
-
     try {
-      // Actualizar la asignación en la base de datos
-      await assignmentService.updateAssignment(activeAssignment.id, {
-        returnedAt: new Date().toISOString(),
-        returnNotes: notes
-      });
-
-      // Actualizar el estado de la laptop
-      await laptopService.updateLaptop(laptopId, {
-        status: 'disponible' as LaptopStatus,
-        currentUser: null
-      });
-
-      // Actualizar el estado local
-      setAssignments(assignments.map(a => 
-        a.id === activeAssignment.id 
-          ? { ...a, returnedAt: new Date().toISOString(), returnNotes: notes }
-          : a
-      ));
-
+      // Actualizar la laptop
       setLaptops(laptops.map(l => 
         l.id === laptopId 
-          ? { ...l, status: 'disponible' as LaptopStatus, currentUser: null, updatedAt: new Date().toISOString() }
+          ? { ...l, updatedAt: new Date().toISOString() }
           : l
       ));
 
@@ -108,19 +57,9 @@ export default function LaptopManagement({ laptops, setLaptops, assignments, set
 
   const handleStatusChange = async (laptopId: string, newStatus: LaptopStatus) => {
     try {
-      await laptopService.updateLaptop(laptopId, {
-        status: newStatus,
-        currentUser: newStatus === 'disponible' ? null : laptops.find(l => l.id === laptopId)?.currentUser
-      });
-
       setLaptops(laptops.map(l => 
         l.id === laptopId 
-          ? { 
-              ...l, 
-              status: newStatus, 
-              currentUser: newStatus === 'disponible' ? null : l.currentUser,
-              updatedAt: new Date().toISOString()
-            }
+          ? { ...l, updatedAt: new Date().toISOString() }
           : l
       ));
 
@@ -137,41 +76,19 @@ export default function LaptopManagement({ laptops, setLaptops, assignments, set
     setShowAssignmentModal(true);
   };
 
-  const availableLaptops = laptops.filter(l => l.status === 'disponible').length;
-  const inUseLaptops = laptops.filter(l => l.status === 'en-uso').length;
-  const maintenanceLaptops = laptops.filter(l => l.status === 'mantenimiento').length;
+  const totalLaptops = laptops.length;
 
   return (
     <div className="space-y-8">
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6">
         <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-emerald-200/50 shadow-sm">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-emerald-600">Disponibles</p>
-              <p className="text-3xl font-bold text-emerald-700">{availableLaptops}</p>
+              <p className="text-sm font-medium text-blue-600">Total Laptops</p>
+              <p className="text-3xl font-bold text-blue-700">{totalLaptops}</p>
             </div>
-            <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-          </div>
-        </div>
-
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-amber-200/50 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-amber-600">En Uso</p>
-              <p className="text-3xl font-bold text-amber-700">{inUseLaptops}</p>
-            </div>
-            <div className="w-3 h-3 bg-amber-500 rounded-full"></div>
-          </div>
-        </div>
-
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-red-200/50 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-red-600">Mantenimiento</p>
-              <p className="text-3xl font-bold text-red-700">{maintenanceLaptops}</p>
-            </div>
-            <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+            <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
           </div>
         </div>
       </div>

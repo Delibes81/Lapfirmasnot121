@@ -8,14 +8,12 @@ import { Laptop, Assignment } from '../types';
 interface AdminViewProps {
   laptops: Laptop[];
   setLaptops: React.Dispatch<React.SetStateAction<Laptop[]>>;
-  assignments: Assignment[];
-  setAssignments: React.Dispatch<React.SetStateAction<Assignment[]>>;
   onDataChange: () => void;
 }
 
 type AdminTab = 'management' | 'history';
 
-export default function AdminView({ laptops, setLaptops, assignments, setAssignments, onDataChange }: AdminViewProps) {
+export default function AdminView({ laptops, setLaptops, onDataChange }: AdminViewProps) {
   const [activeTab, setActiveTab] = useState<AdminTab>('management');
   const [showAddModal, setShowAddModal] = useState(false);
 
@@ -84,12 +82,12 @@ export default function AdminView({ laptops, setLaptops, assignments, setAssignm
         <LaptopManagement 
           laptops={laptops}
           setLaptops={setLaptops}
-          assignments={assignments}
-          setAssignments={setAssignments}
           onDataChange={onDataChange}
         />
       ) : (
-        <HistoryPanel laptops={laptops} assignments={assignments} />
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/50 shadow-sm">
+          <p className="text-center text-gray-500">Historial no disponible sin tabla de asignaciones</p>
+        </div>
       )}
 
       {/* Add Laptop Modal */}
