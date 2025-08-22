@@ -3,6 +3,7 @@ export interface Laptop {
   brand: string;
   model: string;
   serialNumber: string;
+  biometricSerial?: string | null;
   createdAt: string;
   updatedAt: string;
 }

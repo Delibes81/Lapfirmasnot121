@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { X, Laptop, Building, Hash } from 'lucide-react';
+import { X, Laptop, Building, Hash, Fingerprint } from 'lucide-react';
 import { Laptop as LaptopType } from '../types';
 import { laptopService } from '../services/laptopService';
+import { biometricService } from '../services/biometricService';
+import { BiometricDevice } from '../types';
 
 interface AddLaptopModalProps {
   onAdd: (laptop: LaptopType) => void;
@@ -13,10 +15,29 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
   const [formData, setFormData] = useState({
     brand: '',
     model: '',
-    serialNumber: ''
+    serialNumber: '',
+    biometricSerial: ''
   });
 
+  const [biometricDevices, setBiometricDevices] = useState<BiometricDevice[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loadingBiometrics, setLoadingBiometrics] = useState(true);
+
+  // Cargar dispositivos biométricos al montar el componente
+  React.useEffect(() => {
+    const loadBiometricDevices = async () => {
+      try {
+        const devices = await biometricService.getAllBiometricDevices();
+        setBiometricDevices(devices);
+      } catch (error) {
+        console.error('Error loading biometric devices:', error);
+      } finally {
+        setLoadingBiometrics(false);
+      }
+    };
+
+    loadBiometricDevices();
+  }, []);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -49,7 +70,8 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
         id: `LT-${String(existingLaptops.length + 1).padStart(3, '0')}`,
         brand: formData.brand,
         model: formData.model,
-        serialNumber: formData.serialNumber
+        serialNumber: formData.serialNumber,
+        biometricSerial: formData.biometricSerial || null
       };
 
       const createdLaptop = await laptopService.createLaptop(newLaptop);
@@ -146,6 +168,33 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
             />
             {errors.serialNumber && (
               <p className="mt-1 text-sm text-red-600">{errors.serialNumber}</p>
+            )}
+          </div>
+
+          {/* Biometric Serial Selection */}
+          <div>
+            <label htmlFor="biometricSerial" className="block text-sm font-medium text-gray-700 mb-2">
+              <Fingerprint className="h-4 w-4 inline mr-1" />
+              Dispositivo Biométrico (Opcional)
+            </label>
+            {loadingBiometrics ? (
+              <div className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-500">
+                Cargando dispositivos...
+              </div>
+            ) : (
+              <select
+                id="biometricSerial"
+                value={formData.biometricSerial}
+                onChange={(e) => handleInputChange('biometricSerial', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
+              >
+                <option value="">Sin biométrico asignado</option>
+                {biometricDevices.map((device) => (
+                  <option key={device.id} value={device.serialNumber}>
+                    {device.serialNumber}
+                  </option>
+                ))}
+              </select>
             )}
           </div>
 

@@ -7,6 +7,7 @@ const mapLaptopFromDB = (dbLaptop: any): Laptop => ({
   brand: dbLaptop.brand,
   model: dbLaptop.model,
   serialNumber: dbLaptop.serial_number,
+  biometricSerial: dbLaptop.biometric_serial,
   createdAt: dbLaptop.created_at,
   updatedAt: dbLaptop.updated_at
 });
@@ -34,6 +35,7 @@ export const laptopService = {
     brand: string; 
     model: string; 
     serialNumber: string;
+    biometricSerial?: string | null;
   }): Promise<Laptop> {
     const { data, error } = await supabase
       .from('laptops')
@@ -41,7 +43,8 @@ export const laptopService = {
         id: laptop.id,
         brand: laptop.brand,
         model: laptop.model,
-        serial_number: laptop.serialNumber
+        serial_number: laptop.serialNumber,
+        biometric_serial: laptop.biometricSerial || null
       })
       .select()
       .single();
@@ -61,6 +64,7 @@ export const laptopService = {
     if (updates.brand !== undefined) dbUpdates.brand = updates.brand;
     if (updates.model !== undefined) dbUpdates.model = updates.model;
     if (updates.serialNumber !== undefined) dbUpdates.serial_number = updates.serialNumber;
+    if (updates.biometricSerial !== undefined) dbUpdates.biometric_serial = updates.biometricSerial;
 
     const { data, error } = await supabase
       .from('laptops')
