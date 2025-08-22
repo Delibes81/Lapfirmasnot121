@@ -1,5 +1,5 @@
 import React from 'react';
-import { Laptop, Edit3 } from 'lucide-react';
+import { Laptop, Edit3, Fingerprint } from 'lucide-react';
 import { Laptop as LaptopType } from '../types';
 
 interface LaptopCardProps {
@@ -41,6 +41,16 @@ export default function LaptopCard({ laptop, onEdit, showEditButton = false }: L
           <span className="text-gray-500 font-medium">S/N:</span>
           <span className="font-mono text-gray-800 font-semibold">{laptop.serialNumber}</span>
         </div>
+        
+        {laptop.biometricSerial && (
+          <div className="flex items-center justify-between text-sm bg-purple-50/80 rounded-xl p-3">
+            <span className="text-purple-600 font-medium flex items-center">
+              <Fingerprint className="h-3 w-3 mr-1" />
+              Biométrico:
+            </span>
+            <span className="font-mono text-purple-800 font-semibold">{laptop.biometricSerial}</span>
+          </div>
+        )}
       </div>
     </div>
   );
