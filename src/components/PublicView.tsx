@@ -200,7 +200,6 @@ export default function PublicView({ laptops }: PublicViewProps) {
                       </td>
                       <td className="py-4 px-6">
                         <span className="font-medium text-gray-900">{laptop.model}</span>
-                        </div>
                       </td>
                       <td className="py-4 px-6">
                         <span className="font-mono text-sm text-gray-800">{laptop.serialNumber}</span>
