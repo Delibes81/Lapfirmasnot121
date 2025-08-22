@@ -141,7 +141,7 @@ export default function LaptopCard({
       </div>
 
       {/* Quick Assignment Fields - Only show for available laptops */}
-      {showQuickAssign && laptop.status === 'disponible' && (
+      {showQuickAssign && laptop.status === 'disponible' && lawyers.length > 0 && (
         <div className="relative space-y-3 mb-4">
           {/* User Selection */}
           <div>

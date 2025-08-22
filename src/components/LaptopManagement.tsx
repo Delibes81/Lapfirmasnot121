@@ -174,7 +174,7 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
             onQuickAssign={handleQuickAssign}
             showEditButton={true}
             showAssignButton={true}
-            showQuickAssign={dataLoaded}
+            showQuickAssign={true}
           />
         ))}
       </div>
