@@ -7,4 +7,11 @@ export interface Laptop {
   updatedAt: string;
 }
 
+export interface BiometricDevice {
+  id: string;
+  serialNumber: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type ViewMode = 'public' | 'admin';

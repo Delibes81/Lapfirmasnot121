@@ -47,6 +47,26 @@ export interface Database {
           updated_at?: string
         }
       }
+      biometric_devices: {
+        Row: {
+          id: string
+          serial_number: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          serial_number: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          serial_number?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
