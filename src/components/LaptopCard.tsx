@@ -106,8 +106,6 @@ export default function LaptopCard({
           )}
         </div>
       </div>
-        )}
-      </div>
 
       {/* Status Badge */}
       <div className="relative mb-4">
@@ -147,6 +145,7 @@ export default function LaptopCard({
             </span>
             <span className="font-mono text-purple-800 font-semibold">{laptop.biometricSerial}</span>
           </div>
+        )}
         
         {laptop.assignedAt && (
           <div className="text-xs text-gray-500 text-center">
