@@ -19,6 +19,7 @@ export interface Database {
           current_user: string | null
           biometric_reader: boolean
           biometric_serial: string | null
+          assigned_at: string | null
           created_at: string
           updated_at: string
         }
@@ -31,6 +32,7 @@ export interface Database {
           current_user?: string | null
           biometric_reader?: boolean
           biometric_serial?: string | null
+          assigned_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -43,6 +45,7 @@ export interface Database {
           current_user?: string | null
           biometric_reader?: boolean
           biometric_serial?: string | null
+          assigned_at?: string | null
           created_at?: string
           updated_at?: string
         }
