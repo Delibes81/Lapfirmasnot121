@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, History, Settings, Fingerprint, Users, UserPlus } from 'lucide-react';
 import LaptopManagement from './LaptopManagement';
 import HistoryPanel from './HistoryPanel';
@@ -6,7 +6,8 @@ import BiometricManagement from './BiometricManagement';
 import LawyerManagement from './LawyerManagement';
 import AssignmentSection from './AssignmentSection';
 import AddLaptopModal from './AddLaptopModal';
-import { Laptop } from '../types';
+import { Laptop, Assignment } from '../types';
+import { assignmentService } from '../services/assignmentService';
 
 interface AdminViewProps {
   laptops: Laptop[];
@@ -19,6 +20,19 @@ type AdminTab = 'management' | 'assignment' | 'biometric' | 'lawyers' | 'history
 export default function AdminView({ laptops, setLaptops, onDataChange }: AdminViewProps) {
   const [activeTab, setActiveTab] = useState<AdminTab>('management');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [assignmentsLoading, setAssignmentsLoading] = useState(false);
+
+  // Fetch assignments when history tab is active
+  useEffect(() => {
+    if (activeTab === 'history') {
+      setAssignmentsLoading(true);
+      assignmentService.getAllAssignments()
+        .then(setAssignments)
+        .catch(console.error)
+        .finally(() => setAssignmentsLoading(false));
+    }
+  }, [activeTab]);
 
   const addLaptop = (newLaptop: Laptop) => {
     setLaptops([...laptops, newLaptop]);
