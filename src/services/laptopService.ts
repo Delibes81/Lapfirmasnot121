@@ -7,6 +7,10 @@ const mapLaptopFromDB = (dbLaptop: any): Laptop => ({
   brand: dbLaptop.brand,
   model: dbLaptop.model,
   serialNumber: dbLaptop.serial_number,
+  status: dbLaptop.status,
+  currentUser: dbLaptop.current_user,
+  biometricSerial: dbLaptop.biometric_serial,
+  assignedAt: dbLaptop.assigned_at,
   createdAt: dbLaptop.created_at,
   updatedAt: dbLaptop.updated_at
 });
@@ -41,7 +45,8 @@ export const laptopService = {
         id: laptop.id,
         brand: laptop.brand,
         model: laptop.model,
-        serial_number: laptop.serialNumber
+        serial_number: laptop.serialNumber,
+        status: 'disponible'
       })
       .select()
       .single();
@@ -61,6 +66,10 @@ export const laptopService = {
     if (updates.brand !== undefined) dbUpdates.brand = updates.brand;
     if (updates.model !== undefined) dbUpdates.model = updates.model;
     if (updates.serialNumber !== undefined) dbUpdates.serial_number = updates.serialNumber;
+    if (updates.status !== undefined) dbUpdates.status = updates.status;
+    if (updates.currentUser !== undefined) dbUpdates.current_user = updates.currentUser;
+    if (updates.biometricSerial !== undefined) dbUpdates.biometric_serial = updates.biometricSerial;
+    if (updates.assignedAt !== undefined) dbUpdates.assigned_at = updates.assignedAt;
 
     const { data, error } = await supabase
       .from('laptops')
@@ -88,5 +97,48 @@ export const laptopService = {
       console.error('Error deleting laptop:', error);
       throw error;
     }
+  }
+  // Asignar laptop a usuario
+  async assignLaptop(id: string, userName: string, biometricSerial?: string): Promise<Laptop> {
+    const { data, error } = await supabase
+      .from('laptops')
+      .update({
+        status: 'en-uso',
+        current_user: userName,
+        biometric_serial: biometricSerial || null,
+        assigned_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error assigning laptop:', error);
+      throw error;
+    }
+
+    return mapLaptopFromDB(data);
+  },
+
+  // Devolver laptop (liberar asignación)
+  async returnLaptop(id: string): Promise<Laptop> {
+    const { data, error } = await supabase
+      .from('laptops')
+      .update({
+        status: 'disponible',
+        current_user: null,
+        biometric_serial: null,
+        assigned_at: null
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error returning laptop:', error);
+      throw error;
+    }
+
+    return mapLaptopFromDB(data);
   }
 };
