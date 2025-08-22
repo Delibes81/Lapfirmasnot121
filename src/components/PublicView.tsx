@@ -220,25 +220,25 @@ export default function PublicView({ laptops }: PublicViewProps) {
 
       {/* Grid View */}
       {viewMode === 'grid' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 md:gap-6">
           {laptops.map((laptop) => {
             return (
               <div
                 key={laptop.id}
-                className="group bg-white/80 backdrop-blur-md rounded-3xl p-6 border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 relative overflow-hidden"
+                className="group bg-white/80 backdrop-blur-md rounded-3xl p-4 md:p-6 border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 relative overflow-hidden"
               >
                 {/* Background Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
                 {/* Header */}
-                <div className="relative flex items-center justify-between mb-6">
+                <div className="relative flex items-center justify-between mb-4 md:mb-6">
                   <div className={`w-14 h-14 bg-gradient-to-br ${getStatusColor(laptop.status)} rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
                     <Laptop className="h-7 w-7 text-white" />
                   </div>
                 </div>
 
                 {/* Status Badge */}
-                <div className="relative mb-4">
+                <div className="relative mb-3 md:mb-4">
                   <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                     laptop.status === 'disponible' 
                       ? 'bg-emerald-100 text-emerald-800' 
@@ -254,39 +254,39 @@ export default function PublicView({ laptops }: PublicViewProps) {
                 {/* Laptop Info */}
                 <div className="relative space-y-4">
                   <div>
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-700 transition-colors duration-300">{laptop.id}</h3>
-                    <p className="text-sm text-gray-600 font-medium">{laptop.brand} {laptop.model}</p>
+                    <h3 className="text-lg md:text-xl font-bold text-gray-900 group-hover:text-indigo-700 transition-colors duration-300 truncate">{laptop.id}</h3>
+                    <p className="text-xs md:text-sm text-gray-600 font-medium truncate">{laptop.brand} {laptop.model}</p>
                   </div>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2 md:space-y-3">
                     <div className="flex items-center justify-between text-sm bg-gray-50/80 rounded-xl p-3">
                       <span className="text-gray-500 font-medium">S/N:</span>
-                      <span className="font-mono text-gray-800 font-semibold">{laptop.serialNumber}</span>
+                      <span className="font-mono text-gray-800 font-semibold text-xs md:text-sm truncate ml-2">{laptop.serialNumber}</span>
                     </div>
                   </div>
                   
                   {laptop.currentUser && (
-                    <div className="flex items-center justify-between text-sm bg-blue-50/80 rounded-xl p-3">
+                    <div className="flex items-center justify-between text-xs md:text-sm bg-blue-50/80 rounded-xl p-3">
                       <span className="text-blue-500 font-medium flex items-center">
                         <User className="h-4 w-4 mr-1" />
                         Usuario:
                       </span>
-                      <span className="text-blue-800 font-semibold">{laptop.currentUser}</span>
+                      <span className="text-blue-800 font-semibold truncate ml-2">{laptop.currentUser}</span>
                     </div>
                   )}
                   
                   {laptop.biometricSerial && (
-                    <div className="flex items-center justify-between text-sm bg-purple-50/80 rounded-xl p-3">
+                    <div className="flex items-center justify-between text-xs md:text-sm bg-purple-50/80 rounded-xl p-3">
                       <span className="text-purple-500 font-medium flex items-center">
                         <Fingerprint className="h-4 w-4 mr-1" />
                         Biométrico:
                       </span>
-                      <span className="font-mono text-purple-800 font-semibold">{laptop.biometricSerial}</span>
+                      <span className="font-mono text-purple-800 font-semibold text-xs md:text-sm truncate ml-2">{laptop.biometricSerial}</span>
                     </div>
                   )}
                   
                   {laptop.assignedAt && (
-                    <div className="text-xs text-gray-500 text-center">
+                    <div className="text-xs text-gray-500 text-center mt-2">
                       Asignado: {new Date(laptop.assignedAt).toLocaleDateString('es-ES')}
                     </div>
                   )}
