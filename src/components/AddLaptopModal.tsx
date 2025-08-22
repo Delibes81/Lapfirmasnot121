@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Laptop, Building, Hash, Fingerprint } from 'lucide-react';
+import { X, Laptop, Building, Hash } from 'lucide-react';
 import { Laptop as LaptopType } from '../types';
 import { laptopService } from '../services/laptopService';
 
@@ -13,9 +13,7 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
   const [formData, setFormData] = useState({
     brand: '',
     model: '',
-    serialNumber: '',
-    biometricReader: false,
-    biometricSerial: ''
+    serialNumber: ''
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -51,11 +49,7 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
         id: `LT-${String(existingLaptops.length + 1).padStart(3, '0')}`,
         brand: formData.brand,
         model: formData.model,
-        serialNumber: formData.serialNumber,
-        biometricReader: formData.biometricReader,
-        biometricSerial: formData.biometricReader ? formData.biometricSerial : undefined,
-        status: 'disponible',
-        currentUser: null
+        serialNumber: formData.serialNumber
       };
 
       const createdLaptop = await laptopService.createLaptop(newLaptop);
@@ -155,44 +149,6 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
             )}
           </div>
 
-          {/* Biometric Reader */}
-          <div>
-            <label className="flex items-center space-x-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.biometricReader}
-                onChange={(e) => handleInputChange('biometricReader', e.target.checked)}
-                className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-              />
-              <div className="flex items-center">
-                <Fingerprint className="h-4 w-4 mr-2 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">
-                  Incluye lector biométrico
-                </span>
-              </div>
-            </label>
-          </div>
-
-          {/* Biometric Serial Number */}
-          {formData.biometricReader && (
-            <div>
-              <label htmlFor="biometricSerial" className="block text-sm font-medium text-gray-700 mb-2">
-                <Fingerprint className="h-4 w-4 inline mr-1" />
-                Número de Serie del Lector Biométrico
-              </label>
-              <select
-                id="biometricSerial"
-                value={formData.biometricSerial}
-                onChange={(e) => handleInputChange('biometricSerial', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
-              >
-                <option value="">Seleccionar número de serie</option>
-                <option value="P320E09638">P320E09638</option>
-                <option value="P320E09639">P320E09639</option>
-                <option value="P320E09640">P320E09640</option>
-              </select>
-            </div>
-          )}
           {/* Actions */}
           <div className="flex space-x-3 pt-4">
             <button
