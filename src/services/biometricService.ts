@@ -56,15 +56,18 @@ export const biometricService = {
       .from('biometric_devices')
       .update(dbUpdates)
       .eq('id', id)
-      .select()
-      .single();
+      .select();
 
     if (error) {
       console.error('Error updating biometric device:', error);
       throw error;
     }
 
-    return mapBiometricDeviceFromDB(data);
+    if (!data || data.length === 0) {
+      throw new Error(`Biometric device with id ${id} not found`);
+    }
+
+    return mapBiometricDeviceFromDB(data[0]);
   },
 
   // Eliminar dispositivo biométrico

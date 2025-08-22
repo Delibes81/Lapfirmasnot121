@@ -56,15 +56,18 @@ export const lawyerService = {
       .from('lawyers')
       .update(dbUpdates)
       .eq('id', id)
-      .select()
-      .single();
+      .select();
 
     if (error) {
       console.error('Error updating lawyer:', error);
       throw error;
     }
 
-    return mapLawyerFromDB(data);
+    if (!data || data.length === 0) {
+      throw new Error(`Lawyer with id ${id} not found`);
+    }
+
+    return mapLawyerFromDB(data[0]);
   },
 
   // Eliminar abogado

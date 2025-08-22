@@ -75,15 +75,18 @@ export const laptopService = {
       .from('laptops')
       .update(dbUpdates)
       .eq('id', id)
-      .select()
-      .single();
+      .select();
 
     if (error) {
       console.error('Error updating laptop:', error);
       throw error;
     }
 
-    return mapLaptopFromDB(data);
+    if (!data || data.length === 0) {
+      throw new Error(`Laptop with id ${id} not found`);
+    }
+
+    return mapLaptopFromDB(data[0]);
   },
 
   // Eliminar laptop
@@ -109,15 +112,18 @@ export const laptopService = {
         assigned_at: new Date().toISOString()
       })
       .eq('id', id)
-      .select()
-      .single();
+      .select();
 
     if (error) {
       console.error('Error assigning laptop:', error);
       throw error;
     }
 
-    return mapLaptopFromDB(data);
+    if (!data || data.length === 0) {
+      throw new Error(`Laptop with id ${id} not found`);
+    }
+
+    return mapLaptopFromDB(data[0]);
   },
 
   // Devolver laptop (liberar asignación)
@@ -131,14 +137,17 @@ export const laptopService = {
         assigned_at: null
       })
       .eq('id', id)
-      .select()
-      .single();
+      .select();
 
     if (error) {
       console.error('Error returning laptop:', error);
       throw error;
     }
 
-    return mapLaptopFromDB(data);
+    if (!data || data.length === 0) {
+      throw new Error(`Laptop with id ${id} not found`);
+    }
+
+    return mapLaptopFromDB(data[0]);
   }
 };
