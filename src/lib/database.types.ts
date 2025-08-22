@@ -16,7 +16,7 @@ export interface Database {
           model: string
           serial_number: string
           status: 'disponible' | 'en-uso' | 'mantenimiento'
-          current_user: string | null
+          assigned_user: string | null
           biometric_reader: boolean
           biometric_serial: string | null
           assigned_at: string | null
@@ -29,7 +29,7 @@ export interface Database {
           model: string
           serial_number: string
           status?: 'disponible' | 'en-uso' | 'mantenimiento'
-          current_user?: string | null
+          assigned_user?: string | null
           biometric_reader?: boolean
           biometric_serial?: string | null
           assigned_at?: string | null
@@ -42,7 +42,7 @@ export interface Database {
           model?: string
           serial_number?: string
           status?: 'disponible' | 'en-uso' | 'mantenimiento'
-          current_user?: string | null
+          assigned_user?: string | null
           biometric_reader?: boolean
           biometric_serial?: string | null
           assigned_at?: string | null

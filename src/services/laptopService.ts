@@ -8,7 +8,7 @@ const mapLaptopFromDB = (dbLaptop: any): Laptop => ({
   model: dbLaptop.model,
   serialNumber: dbLaptop.serial_number,
   status: dbLaptop.status,
-  currentUser: dbLaptop.current_user,
+  currentUser: dbLaptop.assigned_user,
   biometricSerial: dbLaptop.biometric_serial,
   assignedAt: dbLaptop.assigned_at,
   createdAt: dbLaptop.created_at,
@@ -67,7 +67,7 @@ export const laptopService = {
     if (updates.model !== undefined) dbUpdates.model = updates.model;
     if (updates.serialNumber !== undefined) dbUpdates.serial_number = updates.serialNumber;
     if (updates.status !== undefined) dbUpdates.status = updates.status;
-    if (updates.currentUser !== undefined) dbUpdates.current_user = updates.currentUser;
+    if (updates.currentUser !== undefined) dbUpdates.assigned_user = updates.currentUser;
     if (updates.biometricSerial !== undefined) dbUpdates.biometric_serial = updates.biometricSerial;
     if (updates.assignedAt !== undefined) dbUpdates.assigned_at = updates.assignedAt;
 
@@ -104,7 +104,7 @@ export const laptopService = {
       .from('laptops')
       .update({
         status: 'en-uso',
-        current_user: userName,
+        assigned_user: userName,
         biometric_serial: biometricSerial || null,
         assigned_at: new Date().toISOString()
       })
@@ -126,7 +126,7 @@ export const laptopService = {
       .from('laptops')
       .update({
         status: 'disponible',
-        current_user: null,
+        assigned_user: null,
         biometric_serial: null,
         assigned_at: null
       })
