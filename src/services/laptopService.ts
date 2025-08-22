@@ -119,8 +119,19 @@ export const laptopService = {
       throw error;
     }
 
+    // If update didn't return data, fetch the laptop separately
     if (!data || data.length === 0) {
-      throw new Error(`Laptop with id ${id} not found`);
+      const { data: fetchedData, error: fetchError } = await supabase
+        .from('laptops')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (fetchError || !fetchedData) {
+        throw new Error(`Laptop with id ${id} not found`);
+      }
+
+      return mapLaptopFromDB(fetchedData);
     }
 
     return mapLaptopFromDB(data[0]);
@@ -144,8 +155,19 @@ export const laptopService = {
       throw error;
     }
 
+    // If update didn't return data, fetch the laptop separately
     if (!data || data.length === 0) {
-      throw new Error(`Laptop with id ${id} not found`);
+      const { data: fetchedData, error: fetchError } = await supabase
+        .from('laptops')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (fetchError || !fetchedData) {
+        throw new Error(`Laptop with id ${id} not found`);
+      }
+
+      return mapLaptopFromDB(fetchedData);
     }
 
     return mapLaptopFromDB(data[0]);
