@@ -34,7 +34,6 @@ export const laptopService = {
 
   // Crear nueva laptop
   async createLaptop(laptop: { 
-    id: string; 
     brand: string; 
     model: string; 
     serialNumber: string;
@@ -42,7 +41,6 @@ export const laptopService = {
     const { data, error } = await supabase
       .from('laptops')
       .insert({
-        id: laptop.id,
         brand: laptop.brand,
         model: laptop.model,
         serial_number: laptop.serialNumber,

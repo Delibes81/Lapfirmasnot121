@@ -45,8 +45,7 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
     if (!validateForm()) return;
 
     try {
-      const newLaptop: Omit<LaptopType, 'createdAt' | 'updatedAt'> = {
-        id: `LT-${String(existingLaptops.length + 1).padStart(3, '0')}`,
+      const newLaptop = {
         brand: formData.brand,
         model: formData.model,
         serialNumber: formData.serialNumber
