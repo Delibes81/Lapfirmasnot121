@@ -130,67 +130,6 @@ export default function LaptopManagement({ laptops, setLaptops, assignments, set
       alert('Error al actualizar el estado de la laptop. Por favor, inténtalo de nuevo.');
     }
   };
-      laptopId,
-      userName,
-      purpose: 'Uso general',
-      assignedAt: new Date().toISOString(),
-      returnedAt: null,
-    };
-
-    setAssignments([...assignments, newAssignment]);
-    setLaptops(laptops.map(l => 
-      l.id === laptopId 
-        ? { 
-            ...l, 
-            status: 'en-uso' as LaptopStatus, 
-            currentUser: userName, 
-            biometricReader: !!biometricSerial,
-            biometricSerial: biometricSerial || undefined,
-            updatedAt: new Date().toISOString() 
-          }
-        : l
-    ));
-
-    setShowAssignmentModal(false);
-    setSelectedLaptop(null);
-  };
-
-  const handleReturn = (laptopId: string, notes?: string) => {
-    const activeAssignment = assignments.find(a => 
-      a.laptopId === laptopId && !a.returnedAt
-    );
-
-    if (activeAssignment) {
-      setAssignments(assignments.map(a => 
-        a.id === activeAssignment.id 
-          ? { ...a, returnedAt: new Date().toISOString(), returnNotes: notes }
-          : a
-      ));
-    }
-
-    setLaptops(laptops.map(l => 
-      l.id === laptopId 
-        ? { ...l, status: 'disponible' as LaptopStatus, currentUser: null, updatedAt: new Date().toISOString() }
-        : l
-    ));
-
-    setShowAssignmentModal(false);
-    setSelectedLaptop(null);
-    setIsReturning(false);
-  };
-
-  const handleStatusChange = (laptopId: string, newStatus: LaptopStatus) => {
-    setLaptops(laptops.map(l => 
-      l.id === laptopId 
-        ? { 
-            ...l, 
-            status: newStatus, 
-            currentUser: newStatus === 'disponible' ? null : l.currentUser,
-            updatedAt: new Date().toISOString()
-          }
-        : l
-    ));
-  };
 
   const openAssignmentModal = (laptop: Laptop, returning = false) => {
     setSelectedLaptop(laptop);
