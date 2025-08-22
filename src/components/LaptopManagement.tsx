@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Laptop } from '../types';
+import { Laptop, Lawyer, BiometricDevice } from '../types';
 import LaptopCard from './LaptopCard';
 import EditLaptopModal from './EditLaptopModal';
 import AssignmentModal from './AssignmentModal';
 import { laptopService } from '../services/laptopService';
+import { lawyerService } from '../services/lawyerService';
+import { biometricService } from '../services/biometricService';
 
 interface LaptopManagementProps {
   laptops: Laptop[];
@@ -15,11 +17,32 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
   const [editingLaptop, setEditingLaptop] = useState<Laptop | null>(null);
   const [assigningLaptop, setAssigningLaptop] = useState<Laptop | null>(null);
   const [isReturning, setIsReturning] = useState(false);
+  const [lawyers, setLawyers] = useState<Lawyer[]>([]);
+  const [biometricDevices, setBiometricDevices] = useState<BiometricDevice[]>([]);
+  const [dataLoaded, setDataLoaded] = useState(false);
   
   const totalLaptops = laptops.length;
   const availableLaptops = laptops.filter(l => l.status === 'disponible').length;
   const inUseLaptops = laptops.filter(l => l.status === 'en-uso').length;
   const maintenanceLaptops = laptops.filter(l => l.status === 'mantenimiento').length;
+
+  // Load lawyers and biometric devices
+  React.useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [lawyersData, biometricsData] = await Promise.all([
+          lawyerService.getAllLawyers(),
+          biometricService.getAllBiometricDevices()
+        ]);
+        setLawyers(lawyersData);
+        setBiometricDevices(biometricsData);
+        setDataLoaded(true);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    };
+    loadData();
+  }, []);
 
   const handleEditLaptop = (laptop: Laptop) => {
     setEditingLaptop(laptop);
@@ -70,6 +93,20 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
       alert('Error al devolver la laptop. Por favor, inténtalo de nuevo.');
     }
   };
+
+  const handleQuickAssign = async (laptopId: string, userName: string, biometricSerial?: string) => {
+    try {
+      const updatedLaptop = await laptopService.assignLaptop(laptopId, userName, biometricSerial);
+      setLaptops(prev => prev.map(laptop => 
+        laptop.id === laptopId ? updatedLaptop : laptop
+      ));
+      onDataChange();
+    } catch (error) {
+      console.error('Error assigning laptop:', error);
+      alert('Error al asignar la laptop. Por favor, inténtalo de nuevo.');
+    }
+  };
+
   return (
     <div className="space-y-8">
       {/* Stats */}
@@ -129,11 +166,15 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
           <LaptopCard
             key={laptop.id}
             laptop={laptop}
+            lawyers={lawyers}
+            biometricDevices={biometricDevices}
             onEdit={handleEditLaptop}
             onAssign={handleAssignLaptop}
             onReturn={handleReturnLaptop}
+            onQuickAssign={handleQuickAssign}
             showEditButton={true}
             showAssignButton={true}
+            showQuickAssign={dataLoaded}
           />
         ))}
       </div>

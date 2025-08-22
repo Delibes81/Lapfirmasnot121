@@ -1,24 +1,35 @@
 import React from 'react';
-import { Laptop, Edit3, User, Fingerprint, CheckCircle, Clock, Settings } from 'lucide-react';
-import { Laptop as LaptopType } from '../types';
+import { Laptop, Edit3, User, Fingerprint, CheckCircle, Clock, Settings, UserPlus } from 'lucide-react';
+import { Laptop as LaptopType, Lawyer, BiometricDevice } from '../types';
 
 interface LaptopCardProps {
   laptop: LaptopType;
+  lawyers?: Lawyer[];
+  biometricDevices?: BiometricDevice[];
   onEdit?: (laptop: LaptopType) => void;
   onAssign?: (laptop: LaptopType) => void;
   onReturn?: (laptop: LaptopType) => void;
+  onQuickAssign?: (laptopId: string, userName: string, biometricSerial?: string) => void;
   showEditButton?: boolean;
   showAssignButton?: boolean;
+  showQuickAssign?: boolean;
 }
 
 export default function LaptopCard({ 
   laptop, 
+  lawyers = [],
+  biometricDevices = [],
   onEdit, 
   onAssign, 
   onReturn, 
+  onQuickAssign,
   showEditButton = false, 
-  showAssignButton = false 
+  showAssignButton = false,
+  showQuickAssign = false
 }: LaptopCardProps) {
+  const [selectedUser, setSelectedUser] = React.useState('');
+  const [selectedBiometric, setSelectedBiometric] = React.useState('');
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'disponible':
@@ -55,6 +66,14 @@ export default function LaptopCard({
         return 'Mantenimiento';
       default:
         return status;
+    }
+  };
+
+  const handleQuickAssign = () => {
+    if (selectedUser && onQuickAssign) {
+      onQuickAssign(laptop.id, selectedUser, selectedBiometric || undefined);
+      setSelectedUser('');
+      setSelectedBiometric('');
     }
   };
 
@@ -120,6 +139,61 @@ export default function LaptopCard({
           <span className="ml-1">{getStatusText(laptop.status)}</span>
         </div>
       </div>
+
+      {/* Quick Assignment Fields - Only show for available laptops */}
+      {showQuickAssign && laptop.status === 'disponible' && (
+        <div className="relative space-y-3 mb-4">
+          {/* User Selection */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              <User className="h-3 w-3 inline mr-1" />
+              Usuario
+            </label>
+            <select
+              value={selectedUser}
+              onChange={(e) => setSelectedUser(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            >
+              <option value="">Seleccionar usuario...</option>
+              {lawyers.map((lawyer) => (
+                <option key={lawyer.id} value={lawyer.name}>
+                  {lawyer.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Biometric Selection */}
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              <Fingerprint className="h-3 w-3 inline mr-1" />
+              Biométrico (Opcional)
+            </label>
+            <select
+              value={selectedBiometric}
+              onChange={(e) => setSelectedBiometric(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white font-mono"
+            >
+              <option value="">Sin biométrico</option>
+              {biometricDevices.map((device) => (
+                <option key={device.id} value={device.serialNumber}>
+                  {device.serialNumber}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Quick Assign Button */}
+          <button
+            onClick={handleQuickAssign}
+            disabled={!selectedUser}
+            className="w-full px-3 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:from-blue-700 hover:to-indigo-700 transition-all font-medium text-sm shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+          >
+            <UserPlus className="h-4 w-4 mr-2" />
+            Asignar
+          </button>
+        </div>
+      )}
 
       <div className="relative space-y-3 mb-6">
         <div className="flex items-center justify-between text-sm bg-gray-50/80 rounded-xl p-3">
