@@ -20,16 +20,7 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
   const [activeTab, setActiveTab] = useState<AdminTab>('management');
   const [showAddModal, setShowAddModal] = useState(false);
 
-  const addLaptop = (laptopData: Omit<Laptop, 'id' | 'status' | 'currentUser' | 'createdAt' | 'updatedAt'>) => {
-    const newLaptop: Laptop = {
-      ...laptopData,
-      id: `LT-${String(laptops.length + 1).padStart(3, '0')}`,
-      status: 'disponible',
-      currentUser: null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
+  const addLaptop = (newLaptop: Laptop) => {
     setLaptops([...laptops, newLaptop]);
     setShowAddModal(false);
   };
