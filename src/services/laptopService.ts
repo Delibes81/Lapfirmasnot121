@@ -97,7 +97,7 @@ export const laptopService = {
       console.error('Error deleting laptop:', error);
       throw error;
     }
-  }
+  },
   // Asignar laptop a usuario
   async assignLaptop(id: string, userName: string, biometricSerial?: string): Promise<Laptop> {
     const { data, error } = await supabase
