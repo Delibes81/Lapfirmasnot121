@@ -19,7 +19,7 @@ export default function AssignmentSection({ laptops, onDataChange }: AssignmentS
   const [loading, setLoading] = useState(true);
   const [assigning, setAssigning] = useState(false);
 
-  const availableLaptops = laptops.filter(l => l.status === 'disponible');
+  const availableLaptops = laptops.filter(l => l.status === 'disponible' || !l.status);
   const inUseLaptops = laptops.filter(l => l.status === 'en-uso');
 
   useEffect(() => {
@@ -214,7 +214,7 @@ export default function AssignmentSection({ laptops, onDataChange }: AssignmentS
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center">
                     <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mr-3">
-                      <Laptop className="h-5 w-5 text-white" />
+                    {laptop.id} - {laptop.brand} {laptop.model} ({laptop.status || 'disponible'})
                     </div>
                     <div>
                       <h5 className="font-semibold text-gray-900">{laptop.id}</h5>
@@ -268,6 +268,11 @@ export default function AssignmentSection({ laptops, onDataChange }: AssignmentS
           <div className="text-center py-8">
             <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <Laptop className="h-8 w-8 text-gray-400" />
+              {availableLaptops.length === 0 && !loading && (
+                <p className="text-sm text-gray-500 mt-1">
+                  No hay laptops disponibles. Total laptops: {laptops.length}
+                </p>
+              )}
             </div>
             <h5 className="text-lg font-medium text-gray-900 mb-2">No hay laptops asignadas</h5>
             <p className="text-gray-600">Todas las laptops están disponibles para asignación.</p>

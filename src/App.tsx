@@ -23,6 +23,7 @@ function App() {
       
       const laptopsData = await laptopService.getAllLaptops();
       
+      console.log('Laptops cargadas:', laptopsData); // Debug
       setLaptops(laptopsData);
     } catch (err) {
       console.error('Error loading data:', err);
