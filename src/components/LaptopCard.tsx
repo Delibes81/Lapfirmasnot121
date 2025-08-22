@@ -10,9 +10,11 @@ interface LaptopCardProps {
   onAssign?: (laptop: LaptopType) => void;
   onReturn?: (laptop: LaptopType) => void;
   onQuickAssign?: (laptopId: string, userName: string, biometricSerial?: string) => void;
+  onMaintenanceToggle?: (laptopId: string, inMaintenance: boolean) => void;
   showEditButton?: boolean;
   showAssignButton?: boolean;
   showQuickAssign?: boolean;
+  showMaintenanceButton?: boolean;
 }
 
 export default function LaptopCard({ 
@@ -23,9 +25,11 @@ export default function LaptopCard({
   onAssign, 
   onReturn, 
   onQuickAssign,
+  onMaintenanceToggle,
   showEditButton = false, 
   showAssignButton = false,
-  showQuickAssign = false
+  showQuickAssign = false,
+  showMaintenanceButton = false
 }: LaptopCardProps) {
   const [selectedUser, setSelectedUser] = React.useState('');
   const [selectedBiometric, setSelectedBiometric] = React.useState('');
@@ -121,6 +125,20 @@ export default function LaptopCard({
               title="Devolver laptop"
             >
               <CheckCircle className="h-4 w-4" />
+            </button>
+          )}
+          
+          {showMaintenanceButton && onMaintenanceToggle && (
+            <button
+              onClick={() => onMaintenanceToggle(laptop.id, laptop.status !== 'mantenimiento')}
+              className={`p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all ${
+                laptop.status === 'mantenimiento'
+                  ? 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                  : 'hover:bg-yellow-50 hover:text-yellow-600'
+              } text-gray-600`}
+              title={laptop.status === 'mantenimiento' ? 'Quitar de mantenimiento' : 'Marcar en mantenimiento'}
+            >
+              <Settings className="h-4 w-4" />
             </button>
           )}
         </div>
