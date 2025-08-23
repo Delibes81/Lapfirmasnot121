@@ -39,9 +39,13 @@ export const laptopService = {
     model: string; 
     serialNumber: string;
   }): Promise<Laptop> {
+    // Generate a unique ID for the laptop
+    const laptopId = crypto.randomUUID().substring(0, 8).toUpperCase();
+    
     const { data, error } = await supabase
       .from('laptops')
       .insert({
+        id: laptopId,
         brand: laptop.brand,
         model: laptop.model,
         serial_number: laptop.serialNumber,
