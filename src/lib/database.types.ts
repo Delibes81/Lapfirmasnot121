@@ -24,7 +24,7 @@ export interface Database {
           updated_at: string
         }
         Insert: {
-          id: string
+          id?: string
           brand: string
           model: string
           serial_number: string
