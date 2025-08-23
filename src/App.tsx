@@ -21,13 +21,28 @@ function App() {
       setLoading(true);
       setError(null);
       
+      // Test Supabase connection first
+      console.log('Testing Supabase connection...');
       const laptopsData = await laptopService.getAllLaptops();
       
       console.log('Laptops cargadas:', laptopsData); // Debug
       setLaptops(laptopsData);
     } catch (err) {
       console.error('Error loading data:', err);
-      setError('Error al cargar los datos. Por favor, verifica tu conexión a Supabase.');
+      
+      let errorMessage = 'Error al cargar los datos.';
+      
+      if (err instanceof Error) {
+        if (err.message.includes('Missing Supabase environment variables')) {
+          errorMessage = 'Error de configuración: Variables de entorno de Supabase no encontradas. Por favor, configura tu archivo .env con VITE_SUPABASE_URL y VITE_SUPABASE_ANON_KEY.';
+        } else if (err.message.includes('Failed to fetch')) {
+          errorMessage = 'Error de conexión: No se puede conectar a Supabase. Verifica tu URL de Supabase y tu conexión a internet.';
+        } else {
+          errorMessage = `Error: ${err.message}`;
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
