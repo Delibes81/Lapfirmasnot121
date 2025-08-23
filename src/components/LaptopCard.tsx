@@ -96,52 +96,6 @@ export default function LaptopCard({
             <p className="text-sm text-gray-600 font-medium">{laptop.brand} {laptop.model}</p>
           </div>
         </div>
-        
-        <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
-          {showEditButton && onEdit && (
-            <button
-              onClick={() => onEdit(laptop)}
-              className="p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl hover:bg-indigo-50 hover:text-indigo-600 text-gray-600"
-              title="Editar laptop"
-            >
-              <Edit3 className="h-4 w-4" />
-            </button>
-          )}
-          
-          {showAssignButton && laptop.status === 'disponible' && onAssign && (
-            <button
-              onClick={() => onAssign(laptop)}
-              className="p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl hover:bg-emerald-50 hover:text-emerald-600 text-gray-600"
-              title="Asignar laptop"
-            >
-              <User className="h-4 w-4" />
-            </button>
-          )}
-          
-          {showAssignButton && laptop.status === 'en-uso' && onReturn && (
-            <button
-              onClick={() => onReturn(laptop)}
-              className="p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl hover:bg-orange-50 hover:text-orange-600 text-gray-600"
-              title="Devolver laptop"
-            >
-              <CheckCircle className="h-4 w-4" />
-            </button>
-          )}
-          
-          {showMaintenanceButton && onMaintenanceToggle && (
-            <button
-              onClick={() => onMaintenanceToggle(laptop.id, laptop.status !== 'mantenimiento')}
-              className={`p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all ${
-                laptop.status === 'mantenimiento'
-                  ? 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                  : 'hover:bg-yellow-50 hover:text-yellow-600'
-              } text-gray-600`}
-              title={laptop.status === 'mantenimiento' ? 'Quitar de mantenimiento' : 'Marcar en mantenimiento'}
-            >
-              <Settings className="h-4 w-4" />
-            </button>
-          )}
-        </div>
       </div>
 
       {/* Status Badge */}
@@ -243,6 +197,53 @@ export default function LaptopCard({
           <div className="text-xs text-gray-500 text-center">
             Asignado: {new Date(laptop.assignedAt).toLocaleDateString('es-ES')}
           </div>
+        )}
+      </div>
+
+      {/* Action Buttons - Moved to bottom */}
+      <div className="relative flex justify-center space-x-2 mt-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+        {showEditButton && onEdit && (
+          <button
+            onClick={() => onEdit(laptop)}
+            className="p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl hover:bg-indigo-50 hover:text-indigo-600 text-gray-600 transition-all"
+            title="Editar laptop"
+          >
+            <Edit3 className="h-4 w-4" />
+          </button>
+        )}
+        
+        {showAssignButton && laptop.status === 'disponible' && onAssign && (
+          <button
+            onClick={() => onAssign(laptop)}
+            className="p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl hover:bg-emerald-50 hover:text-emerald-600 text-gray-600 transition-all"
+            title="Asignar laptop"
+          >
+            <User className="h-4 w-4" />
+          </button>
+        )}
+        
+        {showAssignButton && laptop.status === 'en-uso' && onReturn && (
+          <button
+            onClick={() => onReturn(laptop)}
+            className="p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl hover:bg-orange-50 hover:text-orange-600 text-gray-600 transition-all"
+            title="Devolver laptop"
+          >
+            <CheckCircle className="h-4 w-4" />
+          </button>
+        )}
+        
+        {showMaintenanceButton && onMaintenanceToggle && (
+          <button
+            onClick={() => onMaintenanceToggle(laptop.id, laptop.status !== 'mantenimiento')}
+            className={`p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl transition-all ${
+              laptop.status === 'mantenimiento'
+                ? 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                : 'hover:bg-yellow-50 hover:text-yellow-600'
+            } text-gray-600`}
+            title={laptop.status === 'mantenimiento' ? 'Quitar de mantenimiento' : 'Marcar en mantenimiento'}
+          >
+            <Settings className="h-4 w-4" />
+          </button>
         )}
       </div>
     </div>
