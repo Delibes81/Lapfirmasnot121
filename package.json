@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:netlify": "npm run build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postbuild": "echo 'Build completed successfully'"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.56.0",
