@@ -1,5 +1,5 @@
 import React from 'react';
-import { Laptop, Edit3, User, Fingerprint, CheckCircle, Clock, Settings, UserPlus } from 'lucide-react';
+import { Laptop, Edit3, User, Fingerprint, CheckCircle, Clock, Settings, UserPlus, Trash2 } from 'lucide-react';
 import { Laptop as LaptopType, Lawyer, BiometricDevice } from '../types';
 
 interface LaptopCardProps {
@@ -11,10 +11,12 @@ interface LaptopCardProps {
   onReturn?: (laptop: LaptopType) => void;
   onQuickAssign?: (laptopId: string, userName: string, biometricSerial?: string) => void;
   onMaintenanceToggle?: (laptopId: string, inMaintenance: boolean) => void;
+  onDelete?: (laptop: LaptopType) => void;
   showEditButton?: boolean;
   showAssignButton?: boolean;
   showQuickAssign?: boolean;
   showMaintenanceButton?: boolean;
+  showDeleteButton?: boolean;
 }
 
 export default function LaptopCard({ 
@@ -26,10 +28,12 @@ export default function LaptopCard({
   onReturn, 
   onQuickAssign,
   onMaintenanceToggle,
+  onDelete,
   showEditButton = false, 
   showAssignButton = false,
   showQuickAssign = false,
-  showMaintenanceButton = false
+  showMaintenanceButton = false,
+  showDeleteButton = false
 }: LaptopCardProps) {
   const [selectedUser, setSelectedUser] = React.useState('');
   const [selectedBiometric, setSelectedBiometric] = React.useState('');
@@ -243,6 +247,16 @@ export default function LaptopCard({
             title={laptop.status === 'mantenimiento' ? 'Quitar de mantenimiento' : 'Marcar en mantenimiento'}
           >
             <Settings className="h-4 w-4" />
+          </button>
+        )}
+        
+        {showDeleteButton && onDelete && (
+          <button
+            onClick={() => onDelete(laptop)}
+            className="p-2 bg-white/90 backdrop-blur-sm rounded-xl shadow-lg hover:shadow-xl hover:bg-red-50 hover:text-red-600 text-gray-600 transition-all"
+            title="Eliminar laptop"
+          >
+            <Trash2 className="h-4 w-4" />
           </button>
         )}
       </div>

@@ -3,6 +3,7 @@ import { Laptop, Lawyer, BiometricDevice } from '../types';
 import LaptopCard from './LaptopCard';
 import EditLaptopModal from './EditLaptopModal';
 import AssignmentModal from './AssignmentModal';
+import DeleteLaptopModal from './DeleteLaptopModal';
 import { laptopService } from '../services/laptopService';
 import { lawyerService } from '../services/lawyerService';
 import { biometricService } from '../services/biometricService';
@@ -16,6 +17,7 @@ interface LaptopManagementProps {
 export default function LaptopManagement({ laptops, setLaptops, onDataChange }: LaptopManagementProps) {
   const [editingLaptop, setEditingLaptop] = useState<Laptop | null>(null);
   const [assigningLaptop, setAssigningLaptop] = useState<Laptop | null>(null);
+  const [deletingLaptop, setDeletingLaptop] = useState<Laptop | null>(null);
   const [isReturning, setIsReturning] = useState(false);
   const [lawyers, setLawyers] = useState<Lawyer[]>([]);
   const [biometricDevices, setBiometricDevices] = useState<BiometricDevice[]>([]);
@@ -56,6 +58,22 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
   const handleReturnLaptop = (laptop: Laptop) => {
     setAssigningLaptop(laptop);
     setIsReturning(true);
+  };
+
+  const handleDeleteLaptop = (laptop: Laptop) => {
+    setDeletingLaptop(laptop);
+  };
+
+  const handleConfirmDelete = async (laptopId: string) => {
+    try {
+      await laptopService.deleteLaptop(laptopId);
+      setLaptops(prev => prev.filter(laptop => laptop.id !== laptopId));
+      setDeletingLaptop(null);
+      onDataChange();
+    } catch (error) {
+      console.error('Error deleting laptop:', error);
+      alert('Error al eliminar la laptop. Por favor, inténtalo de nuevo.');
+    }
   };
 
   const handleUpdateLaptop = (updatedLaptop: Laptop) => {
@@ -186,12 +204,12 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
             onReturn={handleReturnLaptop}
             onQuickAssign={handleQuickAssign}
             onMaintenanceToggle={handleMaintenanceToggle}
-            onMaintenanceToggle={handleMaintenanceToggle}
+            onDelete={handleDeleteLaptop}
             showEditButton={true}
             showAssignButton={true}
             showQuickAssign={true}
             showMaintenanceButton={true}
-            showMaintenanceButton={true}
+            showDeleteButton={true}
           />
         ))}
       </div>
@@ -214,6 +232,15 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
           onAssign={handleAssignSubmit}
           onReturn={handleReturnSubmit}
           onClose={() => setAssigningLaptop(null)}
+        />
+      )}
+
+      {/* Delete Laptop Modal */}
+      {deletingLaptop && (
+        <DeleteLaptopModal
+          laptop={deletingLaptop}
+          onConfirm={handleConfirmDelete}
+          onClose={() => setDeletingLaptop(null)}
         />
       )}
     </div>
