@@ -220,25 +220,25 @@ export default function PublicView({ laptops }: PublicViewProps) {
 
       {/* Grid View */}
       {viewMode === 'grid' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {laptops.map((laptop) => {
             return (
               <div
                 key={laptop.id}
-                className="group bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 relative overflow-hidden flex flex-col"
+                className="group bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 relative overflow-hidden flex flex-col min-h-[400px]"
               >
                 {/* Background Gradient */}
                 <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
                 {/* Header */}
-                <div className="relative flex items-center justify-center mb-4">
+                <div className="relative flex items-center justify-center mb-6">
                   <div className={`w-14 h-14 bg-gradient-to-br ${getStatusColor(laptop.status)} rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-110`}>
                     <Laptop className="h-7 w-7 text-white" />
                   </div>
                 </div>
 
                 {/* Status Badge */}
-                <div className="relative mb-4 flex justify-center">
+                <div className="relative mb-6 flex justify-center">
                   <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
                     laptop.status === 'disponible' 
                       ? 'bg-emerald-100 text-emerald-800' 
@@ -253,19 +253,19 @@ export default function PublicView({ laptops }: PublicViewProps) {
 
                 {/* Laptop Info */}
                 <div className="relative space-y-3 flex-1 flex flex-col">
-                  <div>
+                  <div className="mb-4">
                     <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-700 transition-colors duration-300 text-center">{laptop.id}</h3>
                     <p className="text-sm text-gray-600 font-medium text-center">{laptop.brand} {laptop.model}</p>
                   </div>
 
-                  <div className="space-y-2 flex-1">
-                    <div className="bg-gray-50/80 rounded-lg p-2">
+                  <div className="space-y-3 flex-1">
+                    <div className="bg-gray-50/80 rounded-lg p-3">
                       <span className="text-gray-500 font-medium">S/N:</span>
                       <div className="font-mono text-gray-800 font-semibold text-sm text-center mt-1">{laptop.serialNumber}</div>
                     </div>
                   
                     {laptop.currentUser && (
-                      <div className="bg-blue-50/80 rounded-lg p-2">
+                      <div className="bg-blue-50/80 rounded-lg p-3">
                         <div className="text-blue-500 font-medium flex items-center justify-center text-sm">
                           <User className="h-3 w-3 mr-1" />
                           Usuario:
@@ -275,7 +275,7 @@ export default function PublicView({ laptops }: PublicViewProps) {
                     )}
                   
                     {laptop.biometricSerial && (
-                      <div className="bg-purple-50/80 rounded-lg p-2">
+                      <div className="bg-purple-50/80 rounded-lg p-3">
                         <div className="text-purple-500 font-medium flex items-center justify-center text-sm">
                           <Fingerprint className="h-3 w-3 mr-1" />
                           Biométrico:
@@ -285,9 +285,9 @@ export default function PublicView({ laptops }: PublicViewProps) {
                     )}
                   </div>
                   
-                  <div className="mt-auto">
+                  <div className="mt-auto pt-4">
                     {laptop.assignedAt && (
-                      <div className="text-sm text-gray-500 text-center">
+                      <div className="text-xs text-gray-500 text-center">
                         Asignado: {new Date(laptop.assignedAt).toLocaleDateString('es-ES')}
                       </div>
                     )}
