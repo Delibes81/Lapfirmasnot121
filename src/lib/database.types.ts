@@ -17,20 +17,18 @@ export interface Database {
           serial_number: string
           status: 'disponible' | 'en-uso' | 'mantenimiento'
           assigned_user: string | null
-          biometric_reader: boolean
           biometric_serial: string | null
           assigned_at: string | null
           created_at: string
           updated_at: string
         }
         Insert: {
-          id?: string
+          id: string
           brand: string
           model: string
           serial_number: string
           status?: 'disponible' | 'en-uso' | 'mantenimiento'
           assigned_user?: string | null
-          biometric_reader?: boolean
           biometric_serial?: string | null
           assigned_at?: string | null
           created_at?: string
@@ -43,9 +41,40 @@ export interface Database {
           serial_number?: string
           status?: 'disponible' | 'en-uso' | 'mantenimiento'
           assigned_user?: string | null
-          biometric_reader?: boolean
           biometric_serial?: string | null
           assigned_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      assignments: {
+        Row: {
+          id: string
+          laptop_id: string
+          user_name: string
+          biometric_serial: string | null
+          assigned_at: string
+          returned_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          laptop_id: string
+          user_name: string
+          biometric_serial?: string | null
+          assigned_at?: string
+          returned_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          laptop_id?: string
+          user_name?: string
+          biometric_serial?: string | null
+          assigned_at?: string
+          returned_at?: string | null
           created_at?: string
           updated_at?: string
         }
@@ -70,25 +99,25 @@ export interface Database {
           updated_at?: string
         }
       }
-    }
-    lawyers: {
-      Row: {
-        id: string
-        name: string
-        created_at: string
-        updated_at: string
-      }
-      Insert: {
-        id?: string
-        name: string
-        created_at?: string
-        updated_at?: string
-      }
-      Update: {
-        id?: string
-        name?: string
-        created_at?: string
-        updated_at?: string
+      lawyers: {
+        Row: {
+          id: string
+          name: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          created_at?: string
+          updated_at?: string
+        }
       }
     }
     Views: {
