@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, Settings } from 'lucide-react';
+import { Eye, Settings, LogOut } from 'lucide-react';
 import PublicView from './components/PublicView';
 import AdminView from './components/AdminView';
+import LoginModal from './components/LoginModal';
 import { Laptop, ViewMode } from './types';
 import { laptopService } from './services/laptopService';
+import { useAuth } from './hooks/useAuth';
 
 function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('public');
   const [laptops, setLaptops] = useState<Laptop[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const { user, loading: authLoading, signOut, isAuthenticated } = useAuth();
 
   // Initialize data
   useEffect(() => {
@@ -82,6 +86,24 @@ function App() {
     loadData();
   };
 
+  const handleAdminClick = () => {
+    if (isAuthenticated) {
+      setViewMode('admin');
+    } else {
+      setShowLoginModal(true);
+    }
+  };
+
+  const handleLoginSuccess = () => {
+    setShowLoginModal(false);
+    setViewMode('admin');
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    setViewMode('public');
+  };
+
   if (laptops.length === 0 && !loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
@@ -127,7 +149,7 @@ function App() {
                 Vista Pública
               </button>
               <button
-                onClick={() => setViewMode('admin')}
+                onClick={handleAdminClick}
                 className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   viewMode === 'admin'
                     ? 'bg-notaria-100 text-notaria-700 shadow-sm'
@@ -137,6 +159,16 @@ function App() {
                 <Settings className="h-4 w-4 mr-2" />
                 Administrador
               </button>
+              
+              {isAuthenticated && (
+                <button
+                  onClick={handleSignOut}
+                  className="inline-flex items-center px-3 py-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg text-sm font-medium transition-all"
+                  title="Cerrar sesión"
+                >
+                  <LogOut className="h-4 w-4" />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -147,13 +179,40 @@ function App() {
         {viewMode === 'public' ? (
           <PublicView laptops={laptops} />
         ) : (
-          <AdminView 
-            laptops={laptops}
-            setLaptops={setLaptops}
-            onDataChange={refreshData}
-          />
+          isAuthenticated ? (
+            <AdminView 
+              laptops={laptops}
+              setLaptops={setLaptops}
+              onDataChange={refreshData}
+            />
+          ) : (
+            <div className="flex items-center justify-center py-12">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gradient-to-r from-notaria-600 to-notaria-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Settings className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Acceso Restringido</h3>
+                <p className="text-gray-600 mb-4">Necesitas iniciar sesión para acceder al panel de administración.</p>
+                <button
+                  onClick={() => setShowLoginModal(true)}
+                  className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-notaria-600 to-notaria-700 text-white rounded-xl hover:from-notaria-700 hover:to-notaria-800 transition-all shadow-sm hover:shadow-md"
+                >
+                  <Settings className="h-4 w-4 mr-2" />
+                  Iniciar Sesión
+                </button>
+              </div>
+            </div>
+          )
         )}
       </main>
+
+      {/* Login Modal */}
+      {showLoginModal && (
+        <LoginModal
+          onClose={() => setShowLoginModal(false)}
+          onLoginSuccess={handleLoginSuccess}
+        />
+      )}
     </div>
   );
 }
