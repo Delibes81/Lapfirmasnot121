@@ -6,9 +6,11 @@ const mapAssignmentFromDB = (dbAssignment: any): Assignment => ({
   id: dbAssignment.id,
   laptopId: dbAssignment.laptop_id,
   userName: dbAssignment.user_name,
+  purpose: dbAssignment.purpose || undefined,
   biometricSerial: dbAssignment.biometric_serial,
   assignedAt: dbAssignment.assigned_at,
   returnedAt: dbAssignment.returned_at,
+  returnNotes: dbAssignment.return_notes || undefined,
   createdAt: dbAssignment.created_at,
   updatedAt: dbAssignment.updated_at
 });

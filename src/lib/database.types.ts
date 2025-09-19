@@ -70,25 +70,57 @@ export interface Database {
           updated_at?: string
         }
       }
-    }
-    lawyers: {
-      Row: {
-        id: string
-        name: string
-        created_at: string
-        updated_at: string
+      lawyers: {
+        Row: {
+          id: string
+          name: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          created_at?: string
+          updated_at?: string
+        }
       }
-      Insert: {
-        id?: string
-        name: string
-        created_at?: string
-        updated_at?: string
-      }
-      Update: {
-        id?: string
-        name?: string
-        created_at?: string
-        updated_at?: string
+      assignments: {
+        Row: {
+          id: string
+          laptop_id: string
+          user_name: string
+          biometric_serial: string | null
+          assigned_at: string
+          returned_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          laptop_id: string
+          user_name: string
+          biometric_serial?: string | null
+          assigned_at?: string
+          returned_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          laptop_id?: string
+          user_name?: string
+          biometric_serial?: string | null
+          assigned_at?: string
+          returned_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
       }
     }
     Views: {

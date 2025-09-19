@@ -186,11 +186,9 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
             onReturn={handleReturnLaptop}
             onQuickAssign={handleQuickAssign}
             onMaintenanceToggle={handleMaintenanceToggle}
-            onMaintenanceToggle={handleMaintenanceToggle}
             showEditButton={true}
             showAssignButton={true}
             showQuickAssign={true}
-            showMaintenanceButton={true}
             showMaintenanceButton={true}
           />
         ))}

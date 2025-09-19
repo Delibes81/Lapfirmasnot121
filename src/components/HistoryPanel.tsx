@@ -234,7 +234,7 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
                     <td className="px-6 py-4">
                       <div className="flex items-start">
                         <FileText className="h-4 w-4 text-gray-400 mr-2 mt-0.5" />
-                        <div className="text-sm text-gray-900">{assignment.purpose}</div>
+                        <div className="text-sm text-gray-900">{assignment.purpose || 'Uso general'}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">

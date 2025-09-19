@@ -29,9 +29,11 @@ export interface Assignment {
   id: string;
   laptopId: string;
   userName: string;
+  purpose?: string;
   biometricSerial: string | null;
   assignedAt: string;
   returnedAt: string | null;
+  returnNotes?: string | null;
   createdAt: string;
   updatedAt: string;
 }
