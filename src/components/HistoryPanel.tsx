@@ -78,7 +78,7 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
       return [
         assignment.laptopId,
         assignment.userName,
-        assignment.purpose || 'Uso general',
+        assignment.purpose,
         formatDate(assignment.assignedAt),
         assignment.returnedAt ? formatDate(assignment.returnedAt) : 'En uso',
         calculateDuration(assignment.assignedAt, assignment.returnedAt),
@@ -234,7 +234,7 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
                     <td className="px-6 py-4">
                       <div className="flex items-start">
                         <FileText className="h-4 w-4 text-gray-400 mr-2 mt-0.5" />
-                        <div className="text-sm text-gray-900">{assignment.purpose || 'Uso general'}</div>
+                        <div className="text-sm text-gray-900">{assignment.purpose}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
