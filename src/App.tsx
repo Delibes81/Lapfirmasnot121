@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, Eye, Settings } from 'lucide-react';
+import { Eye, Settings } from 'lucide-react';
 import PublicView from './components/PublicView';
 import AdminView from './components/AdminView';
 import { Laptop, ViewMode } from './types';
@@ -50,10 +50,10 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Shield className="h-8 w-8 text-white animate-pulse" />
+          <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <img src="/Logo_Notaria121_ALTA.png" alt="Notaría 121" className="h-16 w-auto" />
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Cargando Sistema</h2>
           <p className="text-gray-600">Conectando con la base de datos...</p>
@@ -64,16 +64,16 @@ function App() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
-          <div className="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Shield className="h-8 w-8 text-red-600" />
+          <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <img src="/Logo_Notaria121_ALTA.png" alt="Notaría 121" className="h-16 w-auto" />
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Error de Conexión</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={loadData}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-notaria-600 text-white rounded-lg hover:bg-notaria-700 transition-colors"
           >
             Reintentar
           </button>
@@ -88,16 +88,16 @@ function App() {
 
   if (laptops.length === 0 && !loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
-          <div className="w-16 h-16 bg-yellow-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Shield className="h-8 w-8 text-yellow-600" />
+          <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <img src="/Logo_Notaria121_ALTA.png" alt="Notaría 121" className="h-16 w-auto" />
           </div>
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Base de Datos Vacía</h2>
           <p className="text-gray-600 mb-4">No se encontraron laptops en la base de datos. Asegúrate de que las migraciones se hayan ejecutado correctamente.</p>
           <button
             onClick={refreshData}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-notaria-600 text-white rounded-lg hover:bg-notaria-700 transition-colors"
           >
             Actualizar
           </button>
@@ -107,18 +107,18 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50">
       {/* Header */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
-                <Shield className="h-6 w-6 text-white" />
+              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md">
+                <img src="/Logo_Notaria121_ALTA.png" alt="Notaría 121" className="h-8 w-auto" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Sistema de Laptops</h1>
-                <p className="text-sm text-gray-500">Gestión y Control de Equipos</p>
+                <h1 className="text-xl font-bold text-notaria-800">Sistema de Laptops</h1>
+                <p className="text-sm text-notaria-600">Notaría 121 - Gestión de Equipos</p>
               </div>
             </div>
             
@@ -127,7 +127,7 @@ function App() {
                 onClick={() => setViewMode('public')}
                 className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   viewMode === 'public'
-                    ? 'bg-blue-100 text-blue-700 shadow-sm'
+                    ? 'bg-notaria-100 text-notaria-700 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
@@ -138,7 +138,7 @@ function App() {
                 onClick={() => setViewMode('admin')}
                 className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   viewMode === 'admin'
-                    ? 'bg-indigo-100 text-indigo-700 shadow-sm'
+                    ? 'bg-notaria-100 text-notaria-700 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                 }`}
               >
