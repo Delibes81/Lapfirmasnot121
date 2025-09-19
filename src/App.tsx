@@ -52,9 +52,7 @@ function App() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <img src="/Logo_Notaria121_ALTA.png" alt="Notaría 121" className="h-16 w-auto" />
-          </div>
+          <img src="/Logo_Notaria121_ALTA.png" alt="Notaría 121" className="h-16 w-auto mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Cargando Sistema</h2>
           <p className="text-gray-600">Conectando con la base de datos...</p>
         </div>
@@ -66,9 +64,7 @@ function App() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
-          <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <img src="/Logo_Notaria121_ALTA.png" alt="Notaría 121" className="h-16 w-auto" />
-          </div>
+          <img src="/Logo_Notaria121_ALTA.png" alt="Notaría 121" className="h-16 w-auto mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Error de Conexión</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
@@ -90,9 +86,7 @@ function App() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50 flex items-center justify-center">
         <div className="text-center max-w-md mx-auto p-6">
-          <div className="w-20 h-20 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <img src="/Logo_Notaria121_ALTA.png" alt="Notaría 121" className="h-16 w-auto" />
-          </div>
+          <img src="/Logo_Notaria121_ALTA.png" alt="Notaría 121" className="h-16 w-auto mx-auto mb-4" />
           <h2 className="text-xl font-semibold text-gray-900 mb-2">Base de Datos Vacía</h2>
           <p className="text-gray-600 mb-4">No se encontraron laptops en la base de datos. Asegúrate de que las migraciones se hayan ejecutado correctamente.</p>
           <button
@@ -113,9 +107,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-md">
-                <img src="/Logo_Notaria121_ALTA.png" alt="Notaría 121" className="h-8 w-auto" />
-              </div>
+              <img src="/Logo_Notaria121_ALTA.png" alt="Notaría 121" className="h-10 w-auto" />
               <div>
                 <h1 className="text-xl font-bold text-notaria-800">Sistema de Laptops</h1>
                 <p className="text-sm text-notaria-600">Notaría 121 - Gestión de Equipos</p>
