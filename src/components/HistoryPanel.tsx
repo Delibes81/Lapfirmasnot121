@@ -78,7 +78,7 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
       return [
         assignment.laptopId,
         assignment.userName,
-        assignment.purpose,
+        assignment.purpose || 'Uso general',
         formatDate(assignment.assignedAt),
         assignment.returnedAt ? formatDate(assignment.returnedAt) : 'En uso',
         calculateDuration(assignment.assignedAt, assignment.returnedAt),
