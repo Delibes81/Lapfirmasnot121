@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "build:netlify": "npm run build",
+    "build:netlify": "npm ci && npm run build",
     "lint": "eslint .",
     "preview": "vite preview",
     "postbuild": "echo 'Build completed successfully'"
