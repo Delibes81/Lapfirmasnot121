@@ -70,7 +70,7 @@ export default function PublicView({ laptops }: PublicViewProps) {
               onClick={() => setViewMode('grid')}
               className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 viewMode === 'grid'
-                  ? 'bg-white text-blue-700 shadow-sm'
+                  ? 'bg-white text-notaria-700 shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -81,7 +81,7 @@ export default function PublicView({ laptops }: PublicViewProps) {
               onClick={() => setViewMode('list')}
               className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 viewMode === 'list'
-                  ? 'bg-white text-blue-700 shadow-sm'
+                  ? 'bg-white text-notaria-700 shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -92,7 +92,7 @@ export default function PublicView({ laptops }: PublicViewProps) {
               onClick={() => setViewMode('stats')}
               className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 viewMode === 'stats'
-                  ? 'bg-white text-blue-700 shadow-sm'
+                  ? 'bg-white text-notaria-700 shadow-sm'
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
@@ -106,14 +106,14 @@ export default function PublicView({ laptops }: PublicViewProps) {
       {/* Stats Overview */}
       {(viewMode === 'grid' || viewMode === 'stats') && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-blue-200/50 shadow-sm">
+          <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-notaria-200/50 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-600">Total Laptops</p>
-                <p className="text-3xl font-bold text-blue-700">{totalCount}</p>
+                <p className="text-sm font-medium text-notaria-600">Total Laptops</p>
+                <p className="text-3xl font-bold text-notaria-700">{totalCount}</p>
               </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Laptop className="h-6 w-6 text-blue-600" />
+              <div className="w-12 h-12 bg-notaria-100 rounded-xl flex items-center justify-center">
+                <Laptop className="h-6 w-6 text-notaria-600" />
               </div>
             </div>
           </div>
@@ -228,7 +228,7 @@ export default function PublicView({ laptops }: PublicViewProps) {
                 className="group bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-gray-200 shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 relative overflow-hidden flex flex-col min-h-[420px]"
               >
                 {/* Background Gradient */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-notaria-50/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 
                 {/* Header */}
                 <div className="relative flex items-center justify-center mb-6">
@@ -254,7 +254,7 @@ export default function PublicView({ laptops }: PublicViewProps) {
                 {/* Laptop Info */}
                 <div className="relative space-y-3 flex-1 flex flex-col">
                   <div className="mb-4">
-                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-indigo-700 transition-colors duration-300 text-center">{laptop.id}</h3>
+                    <h3 className="text-xl font-bold text-gray-900 group-hover:text-notaria-700 transition-colors duration-300 text-center">{laptop.id}</h3>
                     <p className="text-sm text-gray-600 font-medium text-center">{laptop.brand} {laptop.model}</p>
                   </div>
 
@@ -265,22 +265,22 @@ export default function PublicView({ laptops }: PublicViewProps) {
                     </div>
                   
                     {laptop.currentUser && (
-                      <div className="bg-blue-50/80 rounded-lg p-3">
-                        <div className="text-blue-500 font-medium flex items-center justify-center text-sm">
+                      <div className="bg-notaria-50/80 rounded-lg p-3">
+                        <div className="text-notaria-500 font-medium flex items-center justify-center text-sm">
                           <User className="h-3 w-3 mr-1" />
                           Usuario:
                         </div>
-                        <div className="text-blue-800 font-semibold text-center text-sm mt-1">{laptop.currentUser}</div>
+                        <div className="text-notaria-800 font-semibold text-center text-sm mt-1">{laptop.currentUser}</div>
                       </div>
                     )}
                   
                     {laptop.biometricSerial && (
-                      <div className="bg-purple-50/80 rounded-lg p-3">
-                        <div className="text-purple-500 font-medium flex items-center justify-center text-sm">
+                      <div className="bg-teal-50/80 rounded-lg p-3">
+                        <div className="text-teal-500 font-medium flex items-center justify-center text-sm">
                           <Fingerprint className="h-3 w-3 mr-1" />
                           Biométrico:
                         </div>
-                        <div className="font-mono text-purple-800 font-semibold text-sm text-center mt-1">{laptop.biometricSerial}</div>
+                        <div className="font-mono text-teal-800 font-semibold text-sm text-center mt-1">{laptop.biometricSerial}</div>
                       </div>
                     )}
                   </div>

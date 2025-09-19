@@ -50,7 +50,7 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
           
           <button
             onClick={() => setShowAddModal(true)}
-            className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-sm hover:shadow-md"
+            className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-notaria-600 to-notaria-700 text-white rounded-xl hover:from-notaria-700 hover:to-notaria-800 transition-all shadow-sm hover:shadow-md"
           >
             <Plus className="h-4 w-4 mr-2" />
             Agregar Laptop
@@ -63,7 +63,7 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
             onClick={() => setActiveTab('management')}
             className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'management'
-                ? 'bg-white text-blue-700 shadow-sm'
+                ? 'bg-white text-notaria-700 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -74,7 +74,7 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
             onClick={() => setActiveTab('biometric')}
             className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'biometric'
-                ? 'bg-white text-blue-700 shadow-sm'
+                ? 'bg-white text-notaria-700 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -85,7 +85,7 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
             onClick={() => setActiveTab('lawyers')}
             className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'lawyers'
-                ? 'bg-white text-blue-700 shadow-sm'
+                ? 'bg-white text-notaria-700 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -96,7 +96,7 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
             onClick={() => setActiveTab('history')}
             className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'history'
-                ? 'bg-white text-blue-700 shadow-sm'
+                ? 'bg-white text-notaria-700 shadow-sm'
                 : 'text-gray-600 hover:text-gray-900'
             }`}
           >
@@ -121,7 +121,7 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
         assignmentsLoading ? (
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/50 shadow-sm">
             <div className="flex items-center justify-center">
-              <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mr-3"></div>
+              <div className="w-8 h-8 border-4 border-notaria-600 border-t-transparent rounded-full animate-spin mr-3"></div>
               <p className="text-gray-600">Cargando historial...</p>
             </div>
           </div>
