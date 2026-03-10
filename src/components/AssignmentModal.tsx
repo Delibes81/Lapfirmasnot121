@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { X, User, Fingerprint, Calendar, CheckCircle } from 'lucide-react';
-import { Laptop, Lawyer, BiometricDevice } from '../types';
-import { lawyerService } from '../services/lawyerService';
-import { biometricService } from '../services/biometricService';
+import { Laptop, Lawyer, BiometricDevice, Pasante } from '../types';
 
 interface AssignmentModalProps {
   laptop: Laptop;
   isReturning: boolean;
-  onAssign: (laptopId: string, userName: string, biometricSerial?: string) => void;
+  onAssign: (laptopId: string, userName: string, biometricSerial?: string, internName?: string) => void;
   onReturn: (laptopId: string) => void;
   onClose: () => void;
+  existingLawyers: Lawyer[];
+  existingBiometrics: BiometricDevice[];
+  existingPasantes: Pasante[];
 }
 
 export default function AssignmentModal({ 
@@ -17,33 +18,14 @@ export default function AssignmentModal({
   isReturning, 
   onAssign, 
   onReturn, 
-  onClose 
+  onClose,
+  existingLawyers,
+  existingBiometrics,
+  existingPasantes
 }: AssignmentModalProps) {
   const [selectedUser, setSelectedUser] = useState('');
   const [selectedBiometric, setSelectedBiometric] = useState('');
-  const [lawyers, setLawyers] = useState<Lawyer[]>([]);
-  const [biometricDevices, setBiometricDevices] = useState<BiometricDevice[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      setLoading(true);
-      const [lawyersData, biometricsData] = await Promise.all([
-        lawyerService.getAllLawyers(),
-        biometricService.getAllBiometricDevices()
-      ]);
-      setLawyers(lawyersData);
-      setBiometricDevices(biometricsData);
-    } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [internName, setInternName] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,24 +33,14 @@ export default function AssignmentModal({
     if (isReturning) {
       onReturn(laptop.id);
     } else {
-      if (selectedUser) {
-        onAssign(laptop.id, selectedUser, selectedBiometric || undefined);
+      if (selectedUser || internName) {
+        // If neither user nor intern is fully selected, we shouldn't submit, but
+        // if only internName is present, default userName to "Asignado a Pasante" to pass db constraint.
+        const fallbackUserName = selectedUser ? selectedUser : "Asignación Temporal";
+        onAssign(laptop.id, fallbackUserName, selectedBiometric || undefined, internName || undefined);
       }
     }
   };
-
-  if (loading) {
-    return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div className="bg-white rounded-2xl shadow-2xl p-8">
-          <div className="text-center">
-            <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600">Cargando datos...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -115,6 +87,11 @@ export default function AssignmentModal({
                 <span className="font-medium">Usuario actual:</span> {laptop.currentUser}
               </p>
             )}
+            {laptop.assignedIntern && (
+              <p className="text-sm text-gray-600">
+                <span className="font-medium text-purple-600">Pasante actual:</span> {laptop.assignedIntern}
+              </p>
+            )}
             {laptop.biometricSerial && (
               <p className="text-sm text-gray-600">
                 <span className="font-medium">Biométrico actual:</span> {laptop.biometricSerial}
@@ -128,22 +105,44 @@ export default function AssignmentModal({
               <div>
                 <label htmlFor="user" className="block text-sm font-medium text-gray-700 mb-2">
                   <User className="h-4 w-4 inline mr-1" />
-                  Seleccionar Usuario
+                  Seleccionar Usuario (Opcional si hay pasante)
                 </label>
                 <select
                   id="user"
                   value={selectedUser}
                   onChange={(e) => setSelectedUser(e.target.value)}
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  required
                 >
                   <option value="">Selecciona un usuario...</option>
-                  {lawyers.map((lawyer) => (
+                  {existingLawyers.map((lawyer) => (
                     <option key={lawyer.id} value={lawyer.name}>
                       {lawyer.name}
                     </option>
                   ))}
                 </select>
+              </div>
+
+              {/* Intern Input with Datalist */}
+              <div>
+                <label htmlFor="pasante" className="block text-sm font-medium text-gray-700 mb-2">
+                  <User className="h-4 w-4 inline mr-1 text-purple-600" />
+                  Nombre de Pasante (Opcional)
+                </label>
+                <input
+                  type="text"
+                  id="pasante"
+                  list="pasantes-list"
+                  value={internName}
+                  onChange={(e) => setInternName(e.target.value)}
+                  placeholder="👩‍🎓 Ej: Juan Pérez"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-purple-900"
+                />
+                <datalist id="pasantes-list">
+                  {existingPasantes.map((p) => (
+                    <option key={p.id} value={p.name} />
+                  ))}
+                </datalist>
+                <p className="text-xs text-gray-500 mt-1">Podrás buscar un pasante existente o crear uno nuevo al escribir su nombre.</p>
               </div>
 
               {/* Biometric Selection */}
@@ -159,7 +158,7 @@ export default function AssignmentModal({
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
                 >
                   <option value="">Sin biométrico</option>
-                  {biometricDevices.map((device) => (
+                  {existingBiometrics.map((device) => (
                     <option key={device.id} value={device.serialNumber}>
                       {device.serialNumber}
                     </option>
@@ -174,7 +173,7 @@ export default function AssignmentModal({
                 <div>
                   <h4 className="text-sm font-medium text-emerald-800">Confirmar Devolución</h4>
                   <p className="text-sm text-emerald-700 mt-1">
-                    La laptop será marcada como disponible y se liberará la asignación del usuario y biométrico.
+                    La laptop será marcada como disponible y se liberará la asignación del usuario, pasante y biométrico.
                   </p>
                 </div>
               </div>
@@ -198,7 +197,7 @@ export default function AssignmentModal({
             </button>
             <button
               type="submit"
-              disabled={!isReturning && !selectedUser}
+              disabled={!isReturning && !selectedUser && !internName}
               className={`flex-1 px-4 py-3 rounded-xl text-white font-medium transition-all shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed ${
                 isReturning
                   ? 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700'

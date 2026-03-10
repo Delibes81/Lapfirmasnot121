@@ -17,6 +17,7 @@ export interface Database {
           serial_number: string
           status: 'disponible' | 'en-uso' | 'mantenimiento'
           assigned_user: string | null
+          assigned_intern: string | null
           biometric_serial: string | null
           assigned_at: string | null
           created_at: string
@@ -29,6 +30,7 @@ export interface Database {
           serial_number: string
           status?: 'disponible' | 'en-uso' | 'mantenimiento'
           assigned_user?: string | null
+          assigned_intern?: string | null
           biometric_serial?: string | null
           assigned_at?: string | null
           created_at?: string
@@ -41,6 +43,7 @@ export interface Database {
           serial_number?: string
           status?: 'disponible' | 'en-uso' | 'mantenimiento'
           assigned_user?: string | null
+          assigned_intern?: string | null
           biometric_serial?: string | null
           assigned_at?: string | null
           created_at?: string
@@ -52,6 +55,7 @@ export interface Database {
           id: string
           laptop_id: string
           user_name: string
+          assigned_intern: string | null
           biometric_serial: string | null
           assigned_at: string
           returned_at: string | null
@@ -62,6 +66,7 @@ export interface Database {
           id?: string
           laptop_id: string
           user_name: string
+          assigned_intern?: string | null
           biometric_serial?: string | null
           assigned_at?: string
           returned_at?: string | null
@@ -72,6 +77,7 @@ export interface Database {
           id?: string
           laptop_id?: string
           user_name?: string
+          assigned_intern?: string | null
           biometric_serial?: string | null
           assigned_at?: string
           returned_at?: string | null
@@ -100,6 +106,26 @@ export interface Database {
         }
       }
       lawyers: {
+        Row: {
+          id: string
+          name: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      pasantes: {
         Row: {
           id: string
           name: string

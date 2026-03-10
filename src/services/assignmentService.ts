@@ -6,6 +6,7 @@ const mapAssignmentFromDB = (dbAssignment: any): Assignment => ({
   id: dbAssignment.id,
   laptopId: dbAssignment.laptop_id,
   userName: dbAssignment.user_name,
+  assignedIntern: dbAssignment.assigned_intern,
   biometricSerial: dbAssignment.biometric_serial,
   assignedAt: dbAssignment.assigned_at,
   returnedAt: dbAssignment.returned_at,
@@ -34,6 +35,7 @@ export const assignmentService = {
   async createAssignment(assignment: {
     laptopId: string;
     userName: string;
+    assignedIntern?: string;
     biometricSerial?: string;
   }): Promise<Assignment> {
     const { data, error } = await supabase
@@ -41,6 +43,7 @@ export const assignmentService = {
       .insert({
         laptop_id: assignment.laptopId,
         user_name: assignment.userName,
+        assigned_intern: assignment.assignedIntern || null,
         biometric_serial: assignment.biometricSerial || null
       })
       .select()

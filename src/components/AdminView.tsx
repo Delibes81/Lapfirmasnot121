@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, History, Settings, Fingerprint, Users } from 'lucide-react';
+import { Plus, History, Settings, Fingerprint, Users, User } from 'lucide-react';
 import LaptopManagement from './LaptopManagement';
 import HistoryPanel from './HistoryPanel';
 import BiometricManagement from './BiometricManagement';
 import LawyerManagement from './LawyerManagement';
+import PasanteManagement from './PasanteManagement';
 import AddLaptopModal from './AddLaptopModal';
 import { Laptop, Assignment } from '../types';
 import { assignmentService } from '../services/assignmentService';
@@ -14,7 +15,7 @@ interface AdminViewProps {
   onDataChange: () => void;
 }
 
-type AdminTab = 'management' | 'biometric' | 'lawyers' | 'history';
+type AdminTab = 'management' | 'biometric' | 'lawyers' | 'pasantes' | 'history';
 
 export default function AdminView({ laptops, setLaptops, onDataChange }: AdminViewProps) {
   const [activeTab, setActiveTab] = useState<AdminTab>('management');
@@ -93,6 +94,17 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
             Personas
           </button>
           <button
+            onClick={() => setActiveTab('pasantes')}
+            className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              activeTab === 'pasantes'
+                ? 'bg-white text-notaria-700 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <User className="h-4 w-4 mr-2" />
+            Pasantes
+          </button>
+          <button
             onClick={() => setActiveTab('history')}
             className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all ${
               activeTab === 'history'
@@ -117,6 +129,8 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
         <BiometricManagement />
       ) : activeTab === 'lawyers' ? (
         <LawyerManagement />
+      ) : activeTab === 'pasantes' ? (
+        <PasanteManagement />
       ) : (
         assignmentsLoading ? (
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/50 shadow-sm">

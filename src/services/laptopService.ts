@@ -10,6 +10,7 @@ const mapLaptopFromDB = (dbLaptop: any): Laptop => ({
   serialNumber: dbLaptop.serial_number,
   status: dbLaptop.status,
   currentUser: dbLaptop.assigned_user,
+  assignedIntern: dbLaptop.assigned_intern,
   biometricSerial: dbLaptop.biometric_serial,
   assignedAt: dbLaptop.assigned_at,
   createdAt: dbLaptop.created_at,
@@ -74,6 +75,7 @@ export const laptopService = {
     if (updates.serialNumber !== undefined) dbUpdates.serial_number = updates.serialNumber;
     if (updates.status !== undefined) dbUpdates.status = updates.status;
     if (updates.currentUser !== undefined) dbUpdates.assigned_user = updates.currentUser;
+    if (updates.assignedIntern !== undefined) dbUpdates.assigned_intern = updates.assignedIntern;
     if (updates.biometricSerial !== undefined) dbUpdates.biometric_serial = updates.biometricSerial;
     if (updates.assignedAt !== undefined) dbUpdates.assigned_at = updates.assignedAt;
 
@@ -111,7 +113,7 @@ export const laptopService = {
     }
   },
   // Asignar laptop a usuario
-  async assignLaptop(id: string, userName: string, biometricSerial?: string): Promise<Laptop> {
+  async assignLaptop(id: string, userName: string, biometricSerial?: string, assignedIntern?: string | null): Promise<Laptop> {
     // Normalizar el ID para evitar problemas de espacios y mayúsculas/minúsculas
     const normalizedId = id.trim().toUpperCase();
     
@@ -122,6 +124,7 @@ export const laptopService = {
         .update({
           status: 'en-uso',
           assigned_user: userName,
+          assigned_intern: assignedIntern || null,
           biometric_serial: biometricSerial || null,
           assigned_at: new Date().toISOString()
         })
@@ -141,6 +144,7 @@ export const laptopService = {
       await assignmentService.createAssignment({
         laptopId: normalizedId,
         userName,
+        assignedIntern: assignedIntern || undefined,
         biometricSerial
       });
 
@@ -166,6 +170,7 @@ export const laptopService = {
         .update({
           status: 'disponible',
           assigned_user: null,
+          assigned_intern: null,
           biometric_serial: null,
           assigned_at: null
         })
@@ -207,6 +212,7 @@ export const laptopService = {
       }
       
       updateData.assigned_user = null;
+      updateData.assigned_intern = null;
       updateData.biometric_serial = null;
       updateData.assigned_at = null;
     }

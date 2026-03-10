@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Laptop, Lawyer, BiometricDevice } from '../types';
+import { Laptop as LaptopIcon, CheckCircle, Clock, Settings } from 'lucide-react';
+import { Laptop, Lawyer, BiometricDevice, Pasante } from '../types';
 import LaptopCard from './LaptopCard';
 import EditLaptopModal from './EditLaptopModal';
 import AssignmentModal from './AssignmentModal';
@@ -7,6 +8,7 @@ import DeleteLaptopModal from './DeleteLaptopModal';
 import { laptopService } from '../services/laptopService';
 import { lawyerService } from '../services/lawyerService';
 import { biometricService } from '../services/biometricService';
+import { pasanteService } from '../services/pasanteService';
 
 interface LaptopManagementProps {
   laptops: Laptop[];
@@ -21,7 +23,7 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
   const [isReturning, setIsReturning] = useState(false);
   const [lawyers, setLawyers] = useState<Lawyer[]>([]);
   const [biometricDevices, setBiometricDevices] = useState<BiometricDevice[]>([]);
-  const [dataLoaded, setDataLoaded] = useState(false);
+  const [pasantes, setPasantes] = useState<Pasante[]>([]);
   
   const totalLaptops = laptops.length;
   const availableLaptops = laptops.filter(l => l.status === 'disponible').length;
@@ -32,13 +34,14 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
   React.useEffect(() => {
     const loadData = async () => {
       try {
-        const [lawyersData, biometricsData] = await Promise.all([
+        const [lawyersData, biometricsData, pasantesData] = await Promise.all([
           lawyerService.getAllLawyers(),
-          biometricService.getAllBiometricDevices()
+          biometricService.getAllBiometricDevices(),
+          pasanteService.getAllPasantes()
         ]);
         setLawyers(lawyersData);
         setBiometricDevices(biometricsData);
-        setDataLoaded(true);
+        setPasantes(pasantesData);
       } catch (error) {
         console.error('Error loading data:', error);
       }
@@ -84,9 +87,19 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
     onDataChange();
   };
 
-  const handleAssignSubmit = async (laptopId: string, userName: string, biometricSerial?: string) => {
+  const handleAssignSubmit = async (laptopId: string, userName: string, biometricSerial?: string, internName?: string) => {
     try {
-      const updatedLaptop = await laptopService.assignLaptop(laptopId, userName, biometricSerial);
+      let finalInternName = internName;
+      if (internName) {
+        const exists = pasantes.some(p => p.name.toLowerCase() === internName.toLowerCase());
+        if (!exists) {
+           const newPasante = await pasanteService.createPasante({ name: internName });
+           setPasantes(prev => [...prev, newPasante]);
+           finalInternName = newPasante.name;
+        }
+      }
+
+      const updatedLaptop = await laptopService.assignLaptop(laptopId, userName, biometricSerial, finalInternName);
       setLaptops(prev => prev.map(laptop => 
         laptop.id === laptopId ? updatedLaptop : laptop
       ));
@@ -112,20 +125,6 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
     }
   };
 
-  const handleQuickAssign = async (laptopId: string, userName: string, biometricSerial?: string) => {
-    try {
-      const updatedLaptop = await laptopService.assignLaptop(laptopId, userName, biometricSerial);
-      setLaptops(prev => prev.map(laptop => 
-        laptop.id === laptopId ? updatedLaptop : laptop
-      ));
-    } catch (error) {
-      console.error('Error assigning laptop:', error);
-      alert('Error al asignar la laptop. Por favor, inténtalo de nuevo.');
-    } finally {
-      onDataChange();
-    }
-  };
-
   const handleMaintenanceToggle = async (laptopId: string, inMaintenance: boolean) => {
     try {
       const updatedLaptop = await laptopService.setMaintenanceStatus(laptopId, inMaintenance);
@@ -139,55 +138,63 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
     }
   };
   return (
-    <div className="space-y-8">
-      {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-notaria-200/50 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-notaria-600">Total Laptops</p>
-              <p className="text-3xl font-bold text-notaria-700">{totalLaptops}</p>
-            </div>
-            <div className="w-12 h-12 bg-notaria-100 rounded-xl flex items-center justify-center">
-              <div className="w-3 h-3 bg-notaria-500 rounded-full"></div>
-            </div>
-          </div>
+    <div className="space-y-6">
+      {/* Bento Grid Stats Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-2">
+        {/* Total */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 border border-white shadow-md shadow-gray-200/40 relative overflow-hidden group hover:-translate-y-0.5 transition-transform duration-300">
+           <div className="absolute -right-4 -top-4 w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-full blur-xl group-hover:bg-blue-100 transition-colors"></div>
+           <div className="relative z-10 flex flex-col h-full justify-between">
+             <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/30 mb-2">
+               <LaptopIcon className="h-5 w-5 text-white" />
+             </div>
+             <div>
+               <p className="text-xs font-semibold text-gray-500 mb-0.5">Total Equipos</p>
+               <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-900 to-gray-700 leading-tight">{totalLaptops}</p>
+             </div>
+           </div>
         </div>
-        
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-emerald-200/50 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-emerald-600">Disponibles</p>
-              <p className="text-3xl font-bold text-emerald-700">{availableLaptops}</p>
-            </div>
-            <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-              <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
-            </div>
-          </div>
+
+        {/* Available */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 border border-white shadow-md shadow-emerald-200/30 relative overflow-hidden group hover:-translate-y-0.5 transition-transform duration-300">
+           <div className="absolute -right-4 -top-4 w-16 h-16 bg-gradient-to-br from-emerald-50 to-teal-100 rounded-full blur-xl group-hover:bg-emerald-100 transition-colors"></div>
+           <div className="relative z-10 flex flex-col h-full justify-between">
+             <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-md shadow-emerald-500/30 mb-2 text-white">
+               <CheckCircle className="h-5 w-5" />
+             </div>
+             <div>
+               <p className="text-xs font-semibold text-gray-500 mb-0.5">Disponibles</p>
+               <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-900 to-gray-700 leading-tight">{availableLaptops}</p>
+             </div>
+           </div>
         </div>
-        
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-orange-200/50 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-orange-600">En Uso</p>
-              <p className="text-3xl font-bold text-orange-700">{inUseLaptops}</p>
-            </div>
-            <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
-              <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
-            </div>
-          </div>
+
+        {/* In Use */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 border border-white shadow-md shadow-orange-200/30 relative overflow-hidden group hover:-translate-y-0.5 transition-transform duration-300">
+           <div className="absolute -right-4 -top-4 w-16 h-16 bg-gradient-to-br from-orange-50 to-amber-100 rounded-full blur-xl group-hover:bg-orange-100 transition-colors"></div>
+           <div className="relative z-10 flex flex-col h-full justify-between">
+             <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-md shadow-orange-500/30 mb-2 text-white">
+               <Clock className="h-5 w-5" />
+             </div>
+             <div>
+               <p className="text-xs font-semibold text-gray-500 mb-0.5">En Uso</p>
+               <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-900 to-gray-700 leading-tight">{inUseLaptops}</p>
+             </div>
+           </div>
         </div>
-        
-        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-gray-200/50 shadow-sm">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Mantenimiento</p>
-              <p className="text-3xl font-bold text-gray-700">{maintenanceLaptops}</p>
-            </div>
-            <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-              <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-            </div>
-          </div>
+
+        {/* Maintenance */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 border border-white shadow-md shadow-slate-200/40 relative overflow-hidden group hover:-translate-y-0.5 transition-transform duration-300">
+           <div className="absolute -right-4 -top-4 w-16 h-16 bg-gradient-to-br from-slate-100 to-gray-200 rounded-full blur-xl group-hover:bg-slate-200 transition-colors"></div>
+           <div className="relative z-10 flex flex-col h-full justify-between">
+             <div className="w-10 h-10 bg-gradient-to-br from-slate-500 to-slate-700 rounded-xl flex items-center justify-center shadow-md shadow-slate-500/30 mb-2 text-white">
+               <Settings className="h-5 w-5" />
+             </div>
+             <div>
+               <p className="text-xs font-semibold text-gray-500 mb-0.5">Mantenimiento</p>
+               <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-900 to-gray-700 leading-tight">{maintenanceLaptops}</p>
+             </div>
+           </div>
         </div>
       </div>
 
@@ -197,17 +204,13 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
           <LaptopCard
             key={laptop.id}
             laptop={laptop}
-            lawyers={lawyers}
-            biometricDevices={biometricDevices}
             onEdit={handleEditLaptop}
             onAssign={handleAssignLaptop}
             onReturn={handleReturnLaptop}
-            onQuickAssign={handleQuickAssign}
             onMaintenanceToggle={handleMaintenanceToggle}
             onDelete={handleDeleteLaptop}
             showEditButton={true}
             showAssignButton={true}
-            showQuickAssign={true}
             showMaintenanceButton={true}
             showDeleteButton={true}
           />
@@ -232,6 +235,9 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
           onAssign={handleAssignSubmit}
           onReturn={handleReturnSubmit}
           onClose={() => setAssigningLaptop(null)}
+          existingLawyers={lawyers}
+          existingBiometrics={biometricDevices}
+          existingPasantes={pasantes}
         />
       )}
 

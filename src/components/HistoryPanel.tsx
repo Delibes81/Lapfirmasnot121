@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Search, Filter, Download, Calendar, User, FileText, Clock, Laptop } from 'lucide-react';
+import { Search, Download, Calendar, User, Clock, Laptop, History } from 'lucide-react';
 import { Laptop as LaptopType, Assignment } from '../types';
 
 interface HistoryPanelProps {
@@ -17,10 +17,11 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
     let filtered = assignments.filter(assignment => {
       const laptop = laptops.find(l => l.id === assignment.laptopId);
       const matchesSearch = 
-        assignment.userName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (assignment.userName && assignment.userName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (assignment.assignedIntern && assignment.assignedIntern.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (assignment.biometricSerial && assignment.biometricSerial.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        laptop?.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        assignment.laptopId.toLowerCase().includes(searchTerm.toLowerCase());
+        (laptop?.model.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (assignment.laptopId.toLowerCase().includes(searchTerm.toLowerCase()));
       
       const matchesLaptop = !filterLaptop || assignment.laptopId === filterLaptop;
       
@@ -38,7 +39,9 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
           comparison = a.laptopId.localeCompare(b.laptopId);
           break;
         case 'user':
-          comparison = a.userName.localeCompare(b.userName);
+          const nameA = a.userName || a.assignedIntern || '';
+          const nameB = b.userName || b.assignedIntern || '';
+          comparison = nameA.localeCompare(nameB);
           break;
       }
       
@@ -72,18 +75,17 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
   };
 
   const exportToCSV = () => {
-    const headers = ['Laptop', 'Usuario', 'Propósito', 'Fecha Asignación', 'Fecha Devolución', 'Duración', 'Estado', 'Notas'];
+    const headers = ['Laptop', 'Usuario', 'Pasante', 'Biométrico', 'Fecha Asignación', 'Fecha Devolución', 'Duración', 'Estado'];
     const csvData = filteredAndSortedAssignments.map(assignment => {
-      const laptop = laptops.find(l => l.id === assignment.laptopId);
       return [
         assignment.laptopId,
-        assignment.userName,
-        assignment.purpose,
+        assignment.userName || '-',
+        assignment.assignedIntern || '-',
+        assignment.biometricSerial || '-',
         formatDate(assignment.assignedAt),
         assignment.returnedAt ? formatDate(assignment.returnedAt) : 'En uso',
         calculateDuration(assignment.assignedAt, assignment.returnedAt),
-        assignment.returnedAt ? 'Devuelto' : 'En uso',
-        assignment.returnNotes || ''
+        assignment.returnedAt ? 'Devuelto' : 'En uso'
       ];
     });
 
@@ -99,25 +101,26 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Filters and Search */}
-      <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 p-6 mb-6">
+    <div className="space-y-6 animate-in fade-in duration-500">
+      
+      {/* Filters and Search - Glassmorphism */}
+      <div className="bg-white/70 backdrop-blur-xl rounded-2xl shadow-sm border border-white/50 p-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <div className="relative group">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4 group-focus-within:text-notaria-600 transition-colors" />
             <input
               type="text"
-              placeholder="Buscar por usuario, propósito o laptop..."
+              placeholder="Buscar equipo, usuario, pasante..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full pl-10 pr-3 py-3 text-sm border border-gray-200 rounded-xl bg-white/70 backdrop-blur-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-notaria-500/50 focus:border-notaria-500 focus:bg-white transition-all"
             />
           </div>
 
           <select
             value={filterLaptop}
             onChange={(e) => setFilterLaptop(e.target.value)}
-            className="w-full px-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl bg-white/70 backdrop-blur-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-notaria-500/50 focus:border-notaria-500 focus:bg-white transition-all"
           >
             <option value="">Todas las laptops</option>
             {laptops.map(laptop => (
@@ -132,10 +135,10 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
               setSortBy(sort as 'date' | 'laptop' | 'user');
               setSortOrder(order as 'asc' | 'desc');
             }}
-            className="w-full px-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl bg-white/70 backdrop-blur-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-notaria-500/50 focus:border-notaria-500 focus:bg-white transition-all"
           >
-            <option value="date-desc">Fecha (más reciente)</option>
-            <option value="date-asc">Fecha (más antigua)</option>
+            <option value="date-desc">Fecha (recientes)</option>
+            <option value="date-asc">Fecha (antiguas)</option>
             <option value="laptop-asc">Laptop (A-Z)</option>
             <option value="laptop-desc">Laptop (Z-A)</option>
             <option value="user-asc">Usuario (A-Z)</option>
@@ -144,7 +147,7 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
 
           <button
             onClick={exportToCSV}
-            className="inline-flex items-center justify-center px-4 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl hover:from-emerald-700 hover:to-green-700 transition-all shadow-sm hover:shadow-md font-medium"
+            className="flex items-center justify-center px-4 py-3 bg-gradient-to-r from-emerald-600 to-green-600 text-white text-sm rounded-xl hover:from-emerald-700 hover:to-green-700 transition-all shadow-sm hover:shadow-md font-medium"
           >
             <Download className="h-4 w-4 mr-2" />
             Exportar CSV
@@ -152,140 +155,183 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
         </div>
       </div>
 
-      {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-gray-200/50">
-          <div className="text-2xl font-bold text-blue-600">{assignments.length}</div>
-          <div className="text-sm text-gray-600">Total Asignaciones</div>
-        </div>
-        <div className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-gray-200/50">
-          <div className="text-2xl font-bold text-orange-600">
-            {assignments.filter(a => !a.returnedAt).length}
+      {/* Bento Grid Stats Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-2">
+        {/* Total Registros */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 border border-white shadow-md shadow-gray-200/40 relative overflow-hidden group hover:-translate-y-0.5 transition-transform duration-300">
+          <div className="absolute -right-4 -top-4 w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-full blur-xl group-hover:bg-blue-100 transition-colors"></div>
+          <div className="relative z-10 flex flex-col h-full justify-between">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/30 mb-2">
+              <History className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-500 mb-0.5">Total Asignaciones</p>
+              <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-900 to-gray-700 leading-tight">{assignments.length}</p>
+            </div>
           </div>
-          <div className="text-sm text-gray-600">Actualmente en Uso</div>
         </div>
-        <div className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-gray-200/50">
-          <div className="text-2xl font-bold text-green-600">
-            {assignments.filter(a => a.returnedAt).length}
+
+        {/* Currently in Use */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 border border-white shadow-md shadow-orange-200/30 relative overflow-hidden group hover:-translate-y-0.5 transition-transform duration-300">
+          <div className="absolute -right-4 -top-4 w-16 h-16 bg-gradient-to-br from-orange-50 to-amber-100 rounded-full blur-xl group-hover:bg-orange-100 transition-colors"></div>
+          <div className="relative z-10 flex flex-col h-full justify-between">
+            <div className="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-xl flex items-center justify-center shadow-md shadow-orange-500/30 mb-2 text-white">
+              <Clock className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-500 mb-0.5">En Uso Activo</p>
+              <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-900 to-gray-700 leading-tight">
+                {assignments.filter(a => !a.returnedAt).length}
+              </p>
+            </div>
           </div>
-          <div className="text-sm text-gray-600">Devueltas</div>
         </div>
-        <div className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl shadow-sm border border-gray-200/50">
-          <div className="text-2xl font-bold text-purple-600">
-            {new Set(assignments.map(a => a.userName)).size}
+
+        {/* Returned */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 border border-white shadow-md shadow-emerald-200/30 relative overflow-hidden group hover:-translate-y-0.5 transition-transform duration-300">
+          <div className="absolute -right-4 -top-4 w-16 h-16 bg-gradient-to-br from-emerald-50 to-teal-100 rounded-full blur-xl group-hover:bg-emerald-100 transition-colors"></div>
+          <div className="relative z-10 flex flex-col h-full justify-between">
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center shadow-md shadow-emerald-500/30 mb-2 text-white">
+              <Calendar className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-500 mb-0.5">Devueltas</p>
+              <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-900 to-gray-700 leading-tight">
+                {assignments.filter(a => a.returnedAt).length}
+              </p>
+            </div>
           </div>
-          <div className="text-sm text-gray-600">Usuarios Únicos</div>
+        </div>
+
+        {/* Unique Users */}
+        <div className="bg-white/80 backdrop-blur-xl rounded-2xl p-4 border border-white shadow-md shadow-purple-200/30 relative overflow-hidden group hover:-translate-y-0.5 transition-transform duration-300">
+          <div className="absolute -right-4 -top-4 w-16 h-16 bg-gradient-to-br from-purple-50 to-fuchsia-100 rounded-full blur-xl group-hover:bg-purple-100 transition-colors"></div>
+          <div className="relative z-10 flex flex-col h-full justify-between">
+            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-fuchsia-600 rounded-xl flex items-center justify-center shadow-md shadow-purple-500/30 mb-2 text-white">
+              <User className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-gray-500 mb-0.5">Usuarios Únicos</p>
+              <p className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-gray-900 to-gray-700 leading-tight">
+                {new Set(assignments.map(a => a.userName || a.assignedIntern)).size}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* History Table */}
-      <div className="bg-white/70 backdrop-blur-sm rounded-2xl shadow-sm border border-gray-200/50 overflow-hidden">
+      {/* History Table - Glassmorphism */}
+      <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg shadow-gray-200/30 border border-white overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-gray-100">
+            <thead className="bg-gray-50/80">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Laptop
+                <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase tracking-wider">
+                  Equipo
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Usuario
+                <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase tracking-wider">
+                  Asignado a
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Biométrico
+                <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase tracking-wider">
+                  Fecha Asignación
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Asignación
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Devolución
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Duración
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Estado
+                <th className="px-6 py-4 text-left text-xs font-black text-gray-500 uppercase tracking-wider">
+                  Estado y Devolución
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-transparent divide-y divide-gray-100">
               {filteredAndSortedAssignments.map((assignment) => {
                 const laptop = laptops.find(l => l.id === assignment.laptopId);
                 return (
-                  <tr key={assignment.id} className="hover:bg-gray-50">
+                  <tr key={assignment.id} className="hover:bg-blue-50/40 transition-colors group">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <Laptop className="h-4 w-4 text-gray-400 mr-2" />
+                        <div className="w-10 h-10 bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-300 mr-3">
+                          <Laptop className="h-5 w-5 text-gray-600" />
+                        </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-extrabold text-gray-900">
                             {assignment.laptopId}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-xs font-medium text-gray-500">
                             {laptop?.brand} {laptop?.model}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <User className="h-4 w-4 text-gray-400 mr-2" />
-                        <div className="text-sm text-gray-900">{assignment.userName}</div>
-                      </div>
-                    </td>
+                    
                     <td className="px-6 py-4">
-                      <div className="flex items-start">
-                        <FileText className="h-4 w-4 text-gray-400 mr-2 mt-0.5" />
-                        <div className="text-sm text-gray-900">{assignment.purpose}</div>
+                      <div className="flex flex-col space-y-1.5 align-middle justify-center">
+                        {assignment.userName && assignment.userName !== 'Asignación Temporal' && (
+                          <div className="flex items-center">
+                            <div className="w-5 h-5 rounded-md bg-notaria-50 text-notaria-600 flex items-center justify-center shrink-0 mr-2 border border-notaria-100">
+                              <User className="h-3 w-3" />
+                            </div>
+                            <span className="text-sm font-bold text-notaria-900 truncate">
+                              {assignment.userName}
+                            </span>
+                          </div>
+                        )}
+                        {assignment.assignedIntern && (
+                          <div className="flex items-center mt-1">
+                            <div className="w-5 h-5 rounded-md bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 mr-2 border border-purple-100">
+                              <User className="h-3 w-3" />
+                            </div>
+                            <span className="text-xs font-bold text-purple-900 truncate">
+                              {assignment.assignedIntern}
+                            </span>
+                          </div>
+                        )}
+                        {(!assignment.userName || assignment.userName === 'Asignación Temporal') && !assignment.assignedIntern && (
+                          <span className="text-xs text-gray-400 font-medium">-</span>
+                        )}
                       </div>
                     </td>
+
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 text-gray-400 mr-2" />
-                        <div className="text-sm text-gray-900">
+                      <div className="flex flex-col">
+                        <div className="flex items-center text-sm font-semibold text-gray-900">
+                          <Calendar className="h-3.5 w-3.5 text-gray-400 mr-1.5" />
                           {formatDate(assignment.assignedAt)}
                         </div>
+                        <div className="flex items-center text-xs text-gray-500 mt-1 font-medium">
+                          <Clock className="h-3 w-3 text-gray-400 mr-1" />
+                          Duración: {calculateDuration(assignment.assignedAt, assignment.returnedAt)}
+                        </div>
                       </div>
                     </td>
+
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {assignment.returnedAt ? (
-                        <div className="flex items-center">
-                          <Calendar className="h-4 w-4 text-gray-400 mr-2" />
-                          <div className="text-sm text-gray-900">
+                      <div className="flex flex-col items-start gap-1">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+                          assignment.returnedAt
+                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                            : 'bg-amber-50 text-amber-700 border-amber-200 shadow-sm'
+                        }`}>
+                          {assignment.returnedAt ? 'Devuelto' : 'En uso'}
+                        </span>
+                        {assignment.returnedAt && (
+                          <div className="text-xs text-gray-500 mt-1 flex items-center font-medium">
+                            <Calendar className="h-3.5 w-3.5 text-gray-400 mr-1.5" />
                             {formatDate(assignment.returnedAt)}
                           </div>
-                        </div>
-                      ) : (
-                        <span className="text-sm text-orange-600 font-medium">En uso</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <Clock className="h-4 w-4 text-gray-400 mr-2" />
-                        <div className="text-sm text-gray-900">
-                          {calculateDuration(assignment.assignedAt, assignment.returnedAt)}
-                        </div>
+                        )}
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        assignment.returnedAt
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-orange-100 text-orange-800'
-                      }`}>
-                        {assignment.returnedAt ? 'Devuelto' : 'En uso'}
-                      </span>
                     </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
-        </div>
 
-        {filteredAndSortedAssignments.length === 0 && (
-          <div className="text-center py-12">
-            <div className="text-gray-500">No se encontraron registros que coincidan con los filtros.</div>
-          </div>
-        )}
+          {filteredAndSortedAssignments.length === 0 && (
+             <div className="col-span-full py-16 text-center text-gray-500 bg-gray-50/50 backdrop-blur-sm">
+               <Search className="h-10 w-10 mx-auto mb-3 text-gray-300" />
+               <p className="text-sm font-medium">No se encontraron registros en el historial que coincidan con los filtros.</p>
+             </div>
+          )}
+        </div>
       </div>
     </div>
   );
