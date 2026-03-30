@@ -1,4 +1,4 @@
-import { Laptop as LaptopIcon, Edit3, User, Fingerprint, CheckCircle, Clock, Settings, Trash2 } from 'lucide-react';
+import { Laptop as LaptopIcon, Edit3, User, Fingerprint, CheckCircle, Clock, Settings, Trash2, EyeOff } from 'lucide-react';
 import { Laptop } from '../types';
 
 interface LaptopCardProps {
@@ -87,8 +87,15 @@ export default function LaptopCard({
 
         {/* Header Row */}
         <div className="flex justify-between items-start mb-4 relative z-10">
-          <div className={`w-10 h-10 bg-gradient-to-br ${getStatusColor(laptop.status)} rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-300`}>
-            <LaptopIcon className="h-5 w-5 text-white" />
+          <div className="flex space-x-2">
+            <div className={`w-10 h-10 bg-gradient-to-br ${getStatusColor(laptop.status)} rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-300`}>
+              <LaptopIcon className="h-5 w-5 text-white" />
+            </div>
+            {laptop.isPublic === false && (
+              <div className="w-10 h-10 bg-gray-100 rounded-xl flex items-center justify-center shadow-sm text-gray-500" title="Oculto al público">
+                <EyeOff className="h-4 w-4" />
+              </div>
+            )}
           </div>
           <div className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ring-1 ring-inset ${getStatusBadgeStyle(laptop.status)}`}>
             {getStatusIcon(laptop.status)}

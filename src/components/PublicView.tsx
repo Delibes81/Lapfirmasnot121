@@ -12,7 +12,9 @@ export default function PublicView({ laptops }: PublicViewProps) {
   const [viewMode, setViewMode] = React.useState<PublicViewMode>('grid');
   const [searchTerm, setSearchTerm] = React.useState('');
 
-  const filteredLaptops = laptops.filter(laptop =>
+  const visibleLaptops = laptops.filter(laptop => laptop.isPublic !== false);
+
+  const filteredLaptops = visibleLaptops.filter(laptop =>
     laptop.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
     laptop.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
     laptop.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -21,10 +23,10 @@ export default function PublicView({ laptops }: PublicViewProps) {
     (laptop.assignedIntern && laptop.assignedIntern.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
-  const totalCount = laptops.length;
-  const availableCount = laptops.filter(l => l.status === 'disponible').length;
-  const inUseCount = laptops.filter(l => l.status === 'en-uso').length;
-  const maintenanceCount = laptops.filter(l => l.status === 'mantenimiento').length;
+  const totalCount = visibleLaptops.length;
+  const availableCount = visibleLaptops.filter(l => l.status === 'disponible').length;
+  const inUseCount = visibleLaptops.filter(l => l.status === 'en-uso').length;
+  const maintenanceCount = visibleLaptops.filter(l => l.status === 'mantenimiento').length;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -187,8 +189,8 @@ export default function PublicView({ laptops }: PublicViewProps) {
               Distribución por Marca
             </h3>
             <div className="space-y-4">
-              {Array.from(new Set(laptops.map(l => l.brand))).map((brand) => {
-                const count = laptops.filter(l => l.brand === brand).length;
+              {Array.from(new Set(visibleLaptops.map(l => l.brand))).map((brand) => {
+                const count = visibleLaptops.filter(l => l.brand === brand).length;
                 const percentage = Math.round((count / totalCount) * 100);
                 return (
                   <div key={brand} className="group">

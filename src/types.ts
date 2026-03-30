@@ -8,6 +8,8 @@ export interface Laptop {
   assignedIntern: string | null;
   biometricSerial: string | null;
   assignedAt: string | null;
+  defaultBiometric?: string | null;
+  isPublic?: boolean;
   createdAt: string;
   updatedAt: string;
 }

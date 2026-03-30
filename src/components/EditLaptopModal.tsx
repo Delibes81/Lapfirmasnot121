@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Laptop, Building, Hash, Save } from 'lucide-react';
-import { Laptop as LaptopType } from '../types';
+import { X, Laptop, Building, Hash, Save, Fingerprint } from 'lucide-react';
+import { Laptop as LaptopType, BiometricDevice } from '../types';
 import { laptopService } from '../services/laptopService';
+import { biometricService } from '../services/biometricService';
 
 interface EditLaptopModalProps {
   laptop: LaptopType;
@@ -14,8 +15,16 @@ export default function EditLaptopModal({ laptop, onUpdate, onClose, existingLap
   const [formData, setFormData] = useState({
     brand: laptop.brand,
     model: laptop.model,
-    serialNumber: laptop.serialNumber
+    serialNumber: laptop.serialNumber,
+    defaultBiometric: laptop.defaultBiometric || '',
+    isPublic: laptop.isPublic ?? true
   });
+
+  const [existingBiometrics, setExistingBiometrics] = useState<BiometricDevice[]>([]);
+  
+  React.useEffect(() => {
+    biometricService.getAllBiometricDevices().then(setExistingBiometrics).catch(console.error);
+  }, []);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -55,7 +64,9 @@ export default function EditLaptopModal({ laptop, onUpdate, onClose, existingLap
       const updatedLaptop = await laptopService.updateLaptop(laptop.id, {
         brand: formData.brand,
         model: formData.model,
-        serialNumber: formData.serialNumber
+        serialNumber: formData.serialNumber,
+        defaultBiometric: formData.defaultBiometric || null,
+        isPublic: formData.isPublic
       });
 
       onUpdate(updatedLaptop);
@@ -67,7 +78,7 @@ export default function EditLaptopModal({ laptop, onUpdate, onClose, existingLap
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -167,6 +178,41 @@ export default function EditLaptopModal({ laptop, onUpdate, onClose, existingLap
             {errors.serialNumber && (
               <p className="mt-1 text-sm text-red-600">{errors.serialNumber}</p>
             )}
+          </div>
+
+          {/* Default Biometric Selection */}
+          <div>
+            <label htmlFor="defaultBiometric" className="block text-sm font-medium text-gray-700 mb-2">
+              <Fingerprint className="h-4 w-4 inline mr-1" />
+              Biométrico por Defecto (Opcional)
+            </label>
+            <select
+              id="defaultBiometric"
+              value={formData.defaultBiometric}
+              onChange={(e) => handleInputChange('defaultBiometric', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-mono"
+            >
+              <option value="">Sin biométrico</option>
+              {existingBiometrics.map((device) => (
+                <option key={device.id} value={device.serialNumber}>
+                  {device.serialNumber}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* isPublic Toggle */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="isPublic"
+              checked={formData.isPublic}
+              onChange={(e) => handleInputChange('isPublic', e.target.checked)}
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label htmlFor="isPublic" className="ml-2 block text-sm font-medium text-gray-700">
+              Visible en Público
+            </label>
           </div>
 
           {/* Actions */}

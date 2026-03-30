@@ -12,7 +12,9 @@ const mapLaptopFromDB = (dbLaptop: any): Laptop => ({
   currentUser: dbLaptop.assigned_user,
   assignedIntern: dbLaptop.assigned_intern,
   biometricSerial: dbLaptop.biometric_serial,
+  defaultBiometric: dbLaptop.default_biometric,
   assignedAt: dbLaptop.assigned_at,
+  isPublic: dbLaptop.is_public ?? true,
   createdAt: dbLaptop.created_at,
   updatedAt: dbLaptop.updated_at
 });
@@ -39,6 +41,8 @@ export const laptopService = {
     brand: string; 
     model: string; 
     serialNumber: string;
+    isPublic?: boolean;
+    defaultBiometric?: string | null;
   }): Promise<Laptop> {
     // Generate a unique ID for the laptop
     const laptopId = crypto.randomUUID().substring(0, 8).toUpperCase();
@@ -50,7 +54,9 @@ export const laptopService = {
         brand: laptop.brand,
         model: laptop.model,
         serial_number: laptop.serialNumber,
-        status: 'disponible'
+        status: 'disponible',
+        is_public: laptop.isPublic ?? true,
+        default_biometric: laptop.defaultBiometric || null
       })
       .select()
       .single();
@@ -78,6 +84,8 @@ export const laptopService = {
     if (updates.assignedIntern !== undefined) dbUpdates.assigned_intern = updates.assignedIntern;
     if (updates.biometricSerial !== undefined) dbUpdates.biometric_serial = updates.biometricSerial;
     if (updates.assignedAt !== undefined) dbUpdates.assigned_at = updates.assignedAt;
+    if (updates.isPublic !== undefined) dbUpdates.is_public = updates.isPublic;
+    if (updates.defaultBiometric !== undefined) dbUpdates.default_biometric = updates.defaultBiometric;
 
     const { data, error } = await supabase
       .from('laptops')

@@ -24,7 +24,7 @@ export default function AssignmentModal({
   existingPasantes
 }: AssignmentModalProps) {
   const [selectedUser, setSelectedUser] = useState('');
-  const [selectedBiometric, setSelectedBiometric] = useState('');
+  const [selectedBiometric, setSelectedBiometric] = useState(laptop.defaultBiometric || '');
   const [internName, setInternName] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {

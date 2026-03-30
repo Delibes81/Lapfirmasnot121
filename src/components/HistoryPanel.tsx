@@ -1,5 +1,5 @@
-import React, { useState, useMemo } from 'react';
-import { Search, Download, Calendar, User, Clock, Laptop, History } from 'lucide-react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Search, Download, Calendar, User, Clock, Laptop, History, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Laptop as LaptopType, Assignment } from '../types';
 
 interface HistoryPanelProps {
@@ -12,6 +12,13 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
   const [filterLaptop, setFilterLaptop] = useState('');
   const [sortBy, setSortBy] = useState<'date' | 'laptop' | 'user'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Volver a la primera página cuando cambian los filtros
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, filterLaptop, sortBy, sortOrder]);
 
   const filteredAndSortedAssignments = useMemo(() => {
     let filtered = assignments.filter(assignment => {
@@ -50,6 +57,13 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
 
     return filtered;
   }, [assignments, laptops, searchTerm, filterLaptop, sortBy, sortOrder]);
+
+  const totalPages = Math.ceil(filteredAndSortedAssignments.length / itemsPerPage);
+  
+  const paginatedAssignments = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredAndSortedAssignments.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredAndSortedAssignments, currentPage, itemsPerPage]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString('es-ES', {
@@ -241,7 +255,7 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
               </tr>
             </thead>
             <tbody className="bg-transparent divide-y divide-gray-100">
-              {filteredAndSortedAssignments.map((assignment) => {
+              {paginatedAssignments.map((assignment) => {
                 const laptop = laptops.find(l => l.id === assignment.laptopId);
                 return (
                   <tr key={assignment.id} className="hover:bg-blue-50/40 transition-colors group">
@@ -332,6 +346,87 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
              </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="px-6 py-4 flex items-center justify-between border-t border-gray-100/50 bg-gray-50/30 backdrop-blur-sm">
+            <div className="flex-1 flex justify-between sm:hidden">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="relative inline-flex items-center px-4 py-2 border border-gray-200 text-sm font-medium rounded-xl text-gray-700 bg-white shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                Anterior
+              </button>
+              <button
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-200 text-sm font-medium rounded-xl text-gray-700 bg-white shadow-sm hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                Siguiente
+              </button>
+            </div>
+            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm text-gray-500">
+                  Mostrando <span className="font-bold text-gray-900">{(currentPage - 1) * itemsPerPage + 1}</span> a <span className="font-bold text-gray-900">{Math.min(currentPage * itemsPerPage, filteredAndSortedAssignments.length)}</span> de <span className="font-bold text-gray-900">{filteredAndSortedAssignments.length}</span> resultados
+                </p>
+              </div>
+              <div>
+                <nav className="relative z-0 inline-flex rounded-xl shadow-sm -space-x-px" aria-label="Pagination">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={currentPage === 1}
+                    className="relative inline-flex items-center px-2 py-2 rounded-l-xl border border-gray-200 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    <span className="sr-only">Anterior</span>
+                    <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    if (
+                      page === 1 || 
+                      page === totalPages || 
+                      (page >= currentPage - 1 && page <= currentPage + 1)
+                    ) {
+                      return (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-all ${
+                            currentPage === page
+                              ? 'z-10 bg-notaria-50 border-notaria-500 text-notaria-700 font-bold'
+                              : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      );
+                    }
+                    
+                    if (
+                      page === currentPage - 2 || 
+                      page === currentPage + 2
+                    ) {
+                      return <span key={page} className="relative inline-flex items-center px-4 py-2 border border-gray-200 bg-white text-sm font-medium text-gray-400">...</span>;
+                    }
+                    
+                    return null;
+                  })}
+
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={currentPage === totalPages}
+                    className="relative inline-flex items-center px-2 py-2 rounded-r-xl border border-gray-200 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
+                    <span className="sr-only">Siguiente</span>
+                    <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                </nav>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

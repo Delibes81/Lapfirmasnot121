@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Laptop, Building, Hash } from 'lucide-react';
-import { Laptop as LaptopType } from '../types';
+import { X, Laptop, Building, Hash, Fingerprint } from 'lucide-react';
+import { Laptop as LaptopType, BiometricDevice } from '../types';
 import { laptopService } from '../services/laptopService';
+import { biometricService } from '../services/biometricService';
 
 interface AddLaptopModalProps {
   onAdd: (laptop: LaptopType) => void;
@@ -13,8 +14,16 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
   const [formData, setFormData] = useState({
     brand: '',
     model: '',
-    serialNumber: ''
+    serialNumber: '',
+    defaultBiometric: '',
+    isPublic: true
   });
+
+  const [existingBiometrics, setExistingBiometrics] = useState<BiometricDevice[]>([]);
+  
+  React.useEffect(() => {
+    biometricService.getAllBiometricDevices().then(setExistingBiometrics).catch(console.error);
+  }, []);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -48,7 +57,9 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
       const newLaptop = {
         brand: formData.brand,
         model: formData.model,
-        serialNumber: formData.serialNumber
+        serialNumber: formData.serialNumber,
+        defaultBiometric: formData.defaultBiometric || null,
+        isPublic: formData.isPublic
       };
 
       const createdLaptop = await laptopService.createLaptop(newLaptop);
@@ -146,6 +157,41 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
             {errors.serialNumber && (
               <p className="mt-1 text-sm text-red-600">{errors.serialNumber}</p>
             )}
+          </div>
+
+          {/* Default Biometric Selection */}
+          <div>
+            <label htmlFor="defaultBiometric" className="block text-sm font-medium text-gray-700 mb-2">
+              <Fingerprint className="h-4 w-4 inline mr-1" />
+              Biométrico por Defecto (Opcional)
+            </label>
+            <select
+              id="defaultBiometric"
+              value={formData.defaultBiometric}
+              onChange={(e) => handleInputChange('defaultBiometric', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono"
+            >
+              <option value="">Sin biométrico</option>
+              {existingBiometrics.map((device) => (
+                <option key={device.id} value={device.serialNumber}>
+                  {device.serialNumber}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* isPublic Toggle */}
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="isPublic"
+              checked={formData.isPublic}
+              onChange={(e) => handleInputChange('isPublic', e.target.checked)}
+              className="h-4 w-4 text-notaria-600 focus:ring-notaria-500 border-gray-300 rounded"
+            />
+            <label htmlFor="isPublic" className="ml-2 block text-sm font-medium text-gray-700">
+              Visible en Público
+            </label>
           </div>
 
           {/* Actions */}
