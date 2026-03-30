@@ -1,6 +1,7 @@
 import React from 'react';
-import { Laptop, Grid3X3, List, BarChart3, User, Fingerprint, CheckCircle, Clock, Settings, Search } from 'lucide-react';
+import { Laptop, Grid3X3, List, BarChart3, User, Fingerprint, CheckCircle, Clock, Settings, Search, Send } from 'lucide-react';
 import { Laptop as LaptopType } from '../types';
+import RequestLaptopModal from './RequestLaptopModal';
 
 interface PublicViewProps {
   laptops: LaptopType[];
@@ -11,20 +12,39 @@ type PublicViewMode = 'grid' | 'list' | 'stats';
 export default function PublicView({ laptops }: PublicViewProps) {
   const [viewMode, setViewMode] = React.useState<PublicViewMode>('grid');
   const [searchTerm, setSearchTerm] = React.useState('');
+  const [showRequestModal, setShowRequestModal] = React.useState(false);
+  const [initialRequestedLaptopId, setInitialRequestedLaptopId] = React.useState<string | undefined>();
 
   const visibleLaptops = laptops.filter(laptop => laptop.isPublic !== false);
 
-  const filteredLaptops = visibleLaptops.filter(laptop =>
-    laptop.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    laptop.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    laptop.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    laptop.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (laptop.currentUser && laptop.currentUser.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (laptop.assignedIntern && laptop.assignedIntern.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  const statusOrder: Record<string, number> = {
+    'en-uso': 1,
+    'disponible': 2,
+    'mantenimiento': 3
+  };
+
+  const filteredLaptops = visibleLaptops
+    .filter(laptop =>
+      laptop.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      laptop.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      laptop.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      laptop.serialNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (laptop.currentUser && laptop.currentUser.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (laptop.assignedIntern && laptop.assignedIntern.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    .sort((a, b) => {
+      const orderA = statusOrder[a.status] || 99;
+      const orderB = statusOrder[b.status] || 99;
+      if (orderA === orderB) {
+        // If same status, order alphabetically by ID as secondary sort
+        return a.id.localeCompare(b.id);
+      }
+      return orderA - orderB;
+    });
 
   const totalCount = visibleLaptops.length;
-  const availableCount = visibleLaptops.filter(l => l.status === 'disponible').length;
+  const strictlyAvailableLaptops = visibleLaptops.filter(l => l.status === 'disponible');
+  const availableCount = strictlyAvailableLaptops.length;
   const inUseCount = visibleLaptops.filter(l => l.status === 'en-uso').length;
   const maintenanceCount = visibleLaptops.filter(l => l.status === 'mantenimiento').length;
 
@@ -117,6 +137,17 @@ export default function PublicView({ laptops }: PublicViewProps) {
             </button>
           ))}
         </div>
+
+        <button 
+          onClick={() => {
+            setInitialRequestedLaptopId(undefined);
+            setShowRequestModal(true);
+          }}
+          className="w-full md:w-auto bg-gradient-to-r from-notaria-600 to-indigo-600 hover:from-notaria-700 hover:to-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-md shadow-notaria-500/20 transition-all flex items-center justify-center shrink-0"
+        >
+          <Send className="w-4 h-4 mr-2" />
+          Solicitar Equipo
+        </button>
       </div>
 
       {/* Bento Grid Stats Overview */}
@@ -349,6 +380,20 @@ export default function PublicView({ laptops }: PublicViewProps) {
                       <span className="text-gray-500">{new Date(laptop.assignedAt).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                     </div>
                   )}
+
+                  {laptop.status === 'disponible' && (
+                    <div className="mt-4 pt-3 border-t border-gray-100/80 relative z-10">
+                      <button 
+                        onClick={() => {
+                          setInitialRequestedLaptopId(laptop.id);
+                          setShowRequestModal(true);
+                        }}
+                        className="w-full flex items-center justify-center px-4 py-2 border border-notaria-200 text-notaria-700 bg-notaria-50 hover:bg-notaria-100 rounded-xl text-xs font-bold transition-colors"
+                      >
+                        <Send className="w-3.5 h-3.5 mr-1.5" /> Solicitar este equipo
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))
@@ -437,6 +482,18 @@ export default function PublicView({ laptops }: PublicViewProps) {
         </div>
       )}
 
+      {/* Modal for Requests */}
+      {showRequestModal && (
+        <RequestLaptopModal
+          availableLaptops={strictlyAvailableLaptops}
+          initialRequestedLaptopId={initialRequestedLaptopId}
+          onClose={() => setShowRequestModal(false)}
+          onSuccess={() => {
+            setShowRequestModal(false);
+            alert('¡Tu solicitud ha sido enviada exitosamente! Por favor, pasa al Área de Sistemas para validar tu solicitud.');
+          }}
+        />
+      )}
     </div>
   );
 }

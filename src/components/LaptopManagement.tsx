@@ -30,6 +30,21 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
   const inUseLaptops = laptops.filter(l => l.status === 'en-uso').length;
   const maintenanceLaptops = laptops.filter(l => l.status === 'mantenimiento').length;
 
+  const statusOrder: Record<string, number> = {
+    'en-uso': 1,
+    'disponible': 2,
+    'mantenimiento': 3
+  };
+
+  const sortedLaptops = [...laptops].sort((a, b) => {
+    const orderA = statusOrder[a.status] || 99;
+    const orderB = statusOrder[b.status] || 99;
+    if (orderA === orderB) {
+      return a.id.localeCompare(b.id);
+    }
+    return orderA - orderB;
+  });
+
   // Load lawyers and biometric devices
   React.useEffect(() => {
     const loadData = async () => {
@@ -200,7 +215,7 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
 
       {/* Laptops Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {laptops.map((laptop) => (
+        {sortedLaptops.map((laptop) => (
           <LaptopCard
             key={laptop.id}
             laptop={laptop}

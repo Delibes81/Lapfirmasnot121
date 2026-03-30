@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, History, Settings, Fingerprint, Users, User } from 'lucide-react';
+import { Plus, History, Settings, Fingerprint, Users, User, Inbox } from 'lucide-react';
 import LaptopManagement from './LaptopManagement';
 import HistoryPanel from './HistoryPanel';
 import BiometricManagement from './BiometricManagement';
 import LawyerManagement from './LawyerManagement';
 import PasanteManagement from './PasanteManagement';
 import AddLaptopModal from './AddLaptopModal';
+import RequestsPanel from './RequestsPanel';
 import { Laptop, Assignment } from '../types';
 import { assignmentService } from '../services/assignmentService';
+import { requestService } from '../services/requestService';
 
 interface AdminViewProps {
   laptops: Laptop[];
@@ -15,13 +17,27 @@ interface AdminViewProps {
   onDataChange: () => void;
 }
 
-type AdminTab = 'management' | 'biometric' | 'lawyers' | 'pasantes' | 'history';
+type AdminTab = 'management' | 'biometric' | 'lawyers' | 'pasantes' | 'history' | 'requests';
 
 export default function AdminView({ laptops, setLaptops, onDataChange }: AdminViewProps) {
   const [activeTab, setActiveTab] = useState<AdminTab>('management');
   const [showAddModal, setShowAddModal] = useState(false);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [assignmentsLoading, setAssignmentsLoading] = useState(false);
+  const [pendingRequestsCount, setPendingRequestsCount] = useState(0);
+
+  // Check for pending requests
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const reqs = await requestService.getPendingRequests();
+        setPendingRequestsCount(reqs.length);
+      } catch (error) {
+        console.error('Error fetching requests count:', error);
+      }
+    };
+    fetchCount();
+  }, [activeTab]); // Refresh when changing tabs to keep it updated
 
   // Fetch assignments when history tab is active
   useEffect(() => {
@@ -115,6 +131,22 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
             <History className="h-4 w-4 mr-2" />
             Historial
           </button>
+          <button
+            onClick={() => setActiveTab('requests')}
+            className={`flex-1 flex items-center justify-center px-4 py-2 rounded-lg text-sm font-medium transition-all relative ${
+              activeTab === 'requests'
+                ? 'bg-white text-notaria-700 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            <Inbox className="h-4 w-4 mr-2" />
+            Solicitudes
+            {pendingRequestsCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
+                {pendingRequestsCount}
+              </span>
+            )}
+          </button>
         </div>
       </div>
 
@@ -131,6 +163,8 @@ export default function AdminView({ laptops, setLaptops, onDataChange }: AdminVi
         <LawyerManagement />
       ) : activeTab === 'pasantes' ? (
         <PasanteManagement />
+      ) : activeTab === 'requests' ? (
+        <RequestsPanel laptops={laptops} onLaptopsChanged={onDataChange} />
       ) : (
         assignmentsLoading ? (
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 border border-gray-200/50 shadow-sm">

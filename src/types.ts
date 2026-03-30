@@ -48,3 +48,14 @@ export interface Assignment {
 }
 
 export type ViewMode = 'public' | 'admin';
+
+export interface LaptopRequest {
+  id: string;
+  applicantName: string;
+  lawyerName: string;
+  reason: string;
+  requestedLaptopId: string;
+  status: 'pendiente' | 'aprobada' | 'rechazada';
+  createdAt: string;
+  updatedAt: string;
+}

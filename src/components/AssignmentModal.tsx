@@ -11,6 +11,8 @@ interface AssignmentModalProps {
   existingLawyers: Lawyer[];
   existingBiometrics: BiometricDevice[];
   existingPasantes: Pasante[];
+  initialSelectedUser?: string;
+  initialInternName?: string;
 }
 
 export default function AssignmentModal({ 
@@ -21,11 +23,13 @@ export default function AssignmentModal({
   onClose,
   existingLawyers,
   existingBiometrics,
-  existingPasantes
+  existingPasantes,
+  initialSelectedUser,
+  initialInternName
 }: AssignmentModalProps) {
-  const [selectedUser, setSelectedUser] = useState('');
+  const [selectedUser, setSelectedUser] = useState(initialSelectedUser || '');
   const [selectedBiometric, setSelectedBiometric] = useState(laptop.defaultBiometric || '');
-  const [internName, setInternName] = useState('');
+  const [internName, setInternName] = useState(initialInternName || '');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
