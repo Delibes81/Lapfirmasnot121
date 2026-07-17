@@ -21,7 +21,7 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
   }, [searchTerm, filterLaptop, sortBy, sortOrder]);
 
   const filteredAndSortedAssignments = useMemo(() => {
-    let filtered = assignments.filter(assignment => {
+    const filtered = assignments.filter(assignment => {
       const laptop = laptops.find(l => l.id === assignment.laptopId);
       const matchesSearch = 
         (assignment.userName && assignment.userName.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -45,11 +45,12 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
         case 'laptop':
           comparison = a.laptopId.localeCompare(b.laptopId);
           break;
-        case 'user':
+        case 'user': {
           const nameA = a.userName || a.assignedIntern || '';
           const nameB = b.userName || b.assignedIntern || '';
           comparison = nameA.localeCompare(nameB);
           break;
+        }
       }
       
       return sortOrder === 'asc' ? comparison : -comparison;

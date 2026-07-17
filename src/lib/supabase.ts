@@ -26,3 +26,8 @@ export type LaptopUpdate = Database['public']['Tables']['laptops']['Update'];
 export type AssignmentRow = Database['public']['Tables']['assignments']['Row'];
 export type AssignmentInsert = Database['public']['Tables']['assignments']['Insert'];
 export type AssignmentUpdate = Database['public']['Tables']['assignments']['Update'];
+
+export type BiometricDeviceRow = Database['public']['Tables']['biometric_devices']['Row'];
+export type LawyerRow = Database['public']['Tables']['lawyers']['Row'];
+export type PasanteRow = Database['public']['Tables']['pasantes']['Row'];
+export type LaptopRequestRow = Database['public']['Tables']['laptop_requests']['Row'];

@@ -1,8 +1,8 @@
-import { supabase } from '../lib/supabase';
+import { supabase, AssignmentRow } from '../lib/supabase';
 import { Assignment } from '../types';
 
 // Convertir datos de Supabase a tipos de la aplicación
-const mapAssignmentFromDB = (dbAssignment: any): Assignment => ({
+const mapAssignmentFromDB = (dbAssignment: AssignmentRow): Assignment => ({
   id: dbAssignment.id,
   laptopId: dbAssignment.laptop_id,
   userName: dbAssignment.user_name,
@@ -30,7 +30,7 @@ export const assignmentService = {
       throw error;
     }
 
-    return data.map(mapAssignmentFromDB);
+    return (data as AssignmentRow[]).map(mapAssignmentFromDB);
   },
 
   // Crear nueva asignación
@@ -60,7 +60,7 @@ export const assignmentService = {
       throw error;
     }
 
-    return mapAssignmentFromDB(data);
+    return mapAssignmentFromDB(data as AssignmentRow);
   },
 
   // Marcar asignación como devuelta
@@ -98,7 +98,7 @@ export const assignmentService = {
       throw error;
     }
 
-    return mapAssignmentFromDB(data);
+    return mapAssignmentFromDB(data as AssignmentRow);
   },
 
   // Obtener asignaciones por laptop
@@ -114,7 +114,7 @@ export const assignmentService = {
       throw error;
     }
 
-    return data.map(mapAssignmentFromDB);
+    return (data as AssignmentRow[]).map(mapAssignmentFromDB);
   },
 
   // Obtener asignación activa por laptop
@@ -136,6 +136,6 @@ export const assignmentService = {
       return null;
     }
 
-    return mapAssignmentFromDB(data[0]);
+    return mapAssignmentFromDB(data[0] as AssignmentRow);
   }
 };

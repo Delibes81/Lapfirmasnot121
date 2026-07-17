@@ -1,9 +1,9 @@
-import { supabase } from '../lib/supabase';
+import { supabase, LaptopRow, LaptopUpdate } from '../lib/supabase';
 import { Laptop } from '../types';
 import { assignmentService } from './assignmentService';
 
 // Convertir datos de Supabase a tipos de la aplicación
-const mapLaptopFromDB = (dbLaptop: any): Laptop => ({
+const mapLaptopFromDB = (dbLaptop: LaptopRow): Laptop => ({
   id: dbLaptop.id,
   name: dbLaptop.name,
   brand: dbLaptop.brand,
@@ -79,7 +79,7 @@ export const laptopService = {
     // Normalizar el ID para evitar problemas de espacios y mayúsculas/minúsculas
     const normalizedId = id.trim().toUpperCase();
     
-    const dbUpdates: any = {};
+    const dbUpdates: LaptopUpdate = {};
     
     if (updates.name !== undefined) dbUpdates.name = updates.name;
     if (updates.brand !== undefined) dbUpdates.brand = updates.brand;
@@ -167,9 +167,9 @@ export const laptopService = {
       });
 
       return mapLaptopFromDB(data[0]);
-    } catch (error) {
-      console.error('Error in assignLaptop:', error);
-      throw error;
+    } catch (err) {
+      console.error('Error in assignLaptop:', err);
+      throw err;
     }
   },
 
@@ -207,9 +207,9 @@ export const laptopService = {
       }
 
       return mapLaptopFromDB(data[0]);
-    } catch (error) {
-      console.error('Error in returnLaptop:', error);
-      throw error;
+    } catch (err) {
+      console.error('Error in returnLaptop:', err);
+      throw err;
     }
   },
 
@@ -219,14 +219,14 @@ export const laptopService = {
     const normalizedId = id.trim().toUpperCase();
     
     const status = inMaintenance ? 'mantenimiento' : 'disponible';
-    const updateData: any = { status };
+    const updateData: LaptopUpdate = { status };
     
     // Si se pone en mantenimiento, limpiar asignación
     if (inMaintenance) {
       // Marcar asignación activa como devuelta si existe
       try {
         await assignmentService.returnAssignment(normalizedId);
-      } catch (error) {
+      } catch {
         // No hay problema si no hay asignación activa
         console.log('No active assignment to return for maintenance');
       }

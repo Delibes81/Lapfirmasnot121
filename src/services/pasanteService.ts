@@ -1,8 +1,8 @@
-import { supabase } from '../lib/supabase';
+import { supabase, PasanteRow } from '../lib/supabase';
 import { Pasante } from '../types';
 
 // Convertir datos de Supabase a tipos de la aplicación
-const mapPasanteFromDB = (dbPasante: any): Pasante => ({
+const mapPasanteFromDB = (dbPasante: PasanteRow): Pasante => ({
   id: dbPasante.id,
   name: dbPasante.name,
   createdAt: dbPasante.created_at,
@@ -23,7 +23,7 @@ export const pasanteService = {
       throw error;
     }
 
-    return data.map(mapPasanteFromDB);
+    return (data as PasanteRow[]).map(mapPasanteFromDB);
   },
 
   // Crear nuevo pasante
@@ -43,12 +43,12 @@ export const pasanteService = {
       throw error;
     }
 
-    return mapPasanteFromDB(data);
+    return mapPasanteFromDB(data as PasanteRow);
   },
 
   // Actualizar pasante
   async updatePasante(id: string, updates: Partial<Pasante>): Promise<Pasante> {
-    const dbUpdates: any = {};
+    const dbUpdates: Record<string, unknown> = {};
     
     if (updates.name !== undefined) dbUpdates.name = updates.name;
 
@@ -67,7 +67,7 @@ export const pasanteService = {
       throw new Error(`Pasante with id ${id} not found`);
     }
 
-    return mapPasanteFromDB(data[0]);
+    return mapPasanteFromDB(data[0] as PasanteRow);
   },
 
   // Eliminar pasante

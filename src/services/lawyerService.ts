@@ -1,8 +1,8 @@
-import { supabase } from '../lib/supabase';
+import { supabase, LawyerRow } from '../lib/supabase';
 import { Lawyer } from '../types';
 
 // Convertir datos de Supabase a tipos de la aplicación
-const mapLawyerFromDB = (dbLawyer: any): Lawyer => ({
+const mapLawyerFromDB = (dbLawyer: LawyerRow): Lawyer => ({
   id: dbLawyer.id,
   name: dbLawyer.name,
   createdAt: dbLawyer.created_at,
@@ -23,7 +23,7 @@ export const lawyerService = {
       throw error;
     }
 
-    return data.map(mapLawyerFromDB);
+    return (data as LawyerRow[]).map(mapLawyerFromDB);
   },
 
   // Crear nuevo abogado
@@ -43,12 +43,12 @@ export const lawyerService = {
       throw error;
     }
 
-    return mapLawyerFromDB(data);
+    return mapLawyerFromDB(data as LawyerRow);
   },
 
   // Actualizar abogado
   async updateLawyer(id: string, updates: Partial<Lawyer>): Promise<Lawyer> {
-    const dbUpdates: any = {};
+    const dbUpdates: Record<string, unknown> = {};
     
     if (updates.name !== undefined) dbUpdates.name = updates.name;
 
@@ -67,7 +67,7 @@ export const lawyerService = {
       throw new Error(`Lawyer with id ${id} not found`);
     }
 
-    return mapLawyerFromDB(data[0]);
+    return mapLawyerFromDB(data[0] as LawyerRow);
   },
 
   // Eliminar abogado

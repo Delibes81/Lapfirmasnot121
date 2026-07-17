@@ -13,7 +13,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const { user, loading: authLoading, signOut, isAuthenticated } = useAuth();
+  const { signOut, isAuthenticated } = useAuth();
 
   // Initialize data
   useEffect(() => {

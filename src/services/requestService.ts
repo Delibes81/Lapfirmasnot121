@@ -1,8 +1,8 @@
-import { supabase } from '../lib/supabase';
+import { supabase, LaptopRequestRow } from '../lib/supabase';
 import { LaptopRequest } from '../types';
 
 // Convert from DB to App types
-const mapRequestFromDB = (dbRequest: any): LaptopRequest => ({
+const mapRequestFromDB = (dbRequest: LaptopRequestRow): LaptopRequest => ({
   id: dbRequest.id,
   applicantName: dbRequest.applicant_name,
   lawyerName: dbRequest.lawyer_name,
@@ -27,7 +27,7 @@ export const requestService = {
       throw error;
     }
 
-    return data.map(mapRequestFromDB);
+    return (data as LaptopRequestRow[]).map(mapRequestFromDB);
   },
 
   // Create a new request
@@ -49,7 +49,7 @@ export const requestService = {
       throw error;
     }
 
-    return mapRequestFromDB(data);
+    return mapRequestFromDB(data as LaptopRequestRow);
   },
 
   // Update request status
@@ -66,6 +66,6 @@ export const requestService = {
       throw error;
     }
 
-    return mapRequestFromDB(data);
+    return mapRequestFromDB(data as LaptopRequestRow);
   }
 };

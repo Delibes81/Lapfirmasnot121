@@ -1,8 +1,8 @@
-import { supabase } from '../lib/supabase';
+import { supabase, BiometricDeviceRow } from '../lib/supabase';
 import { BiometricDevice } from '../types';
 
 // Convertir datos de Supabase a tipos de la aplicación
-const mapBiometricDeviceFromDB = (dbDevice: any): BiometricDevice => ({
+const mapBiometricDeviceFromDB = (dbDevice: BiometricDeviceRow): BiometricDevice => ({
   id: dbDevice.id,
   serialNumber: dbDevice.serial_number,
   createdAt: dbDevice.created_at,
@@ -23,7 +23,7 @@ export const biometricService = {
       throw error;
     }
 
-    return data.map(mapBiometricDeviceFromDB);
+    return (data as BiometricDeviceRow[]).map(mapBiometricDeviceFromDB);
   },
 
   // Crear nuevo dispositivo biométrico
@@ -43,12 +43,12 @@ export const biometricService = {
       throw error;
     }
 
-    return mapBiometricDeviceFromDB(data);
+    return mapBiometricDeviceFromDB(data as BiometricDeviceRow);
   },
 
   // Actualizar dispositivo biométrico
   async updateBiometricDevice(id: string, updates: Partial<BiometricDevice>): Promise<BiometricDevice> {
-    const dbUpdates: any = {};
+    const dbUpdates: Record<string, unknown> = {};
     
     if (updates.serialNumber !== undefined) dbUpdates.serial_number = updates.serialNumber;
 
@@ -67,7 +67,7 @@ export const biometricService = {
       throw new Error(`Biometric device with id ${id} not found`);
     }
 
-    return mapBiometricDeviceFromDB(data[0]);
+    return mapBiometricDeviceFromDB(data[0] as BiometricDeviceRow);
   },
 
   // Eliminar dispositivo biométrico
