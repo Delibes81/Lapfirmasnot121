@@ -12,6 +12,7 @@ interface AddLaptopModalProps {
 
 export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddLaptopModalProps) {
   const [formData, setFormData] = useState({
+    name: '',
     brand: '',
     model: '',
     serialNumber: '',
@@ -55,6 +56,7 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
 
     try {
       const newLaptop = {
+        name: formData.name.trim() || undefined,
         brand: formData.brand,
         model: formData.model,
         serialNumber: formData.serialNumber,
@@ -96,6 +98,22 @@ export default function AddLaptopModal({ onAdd, onClose, existingLaptops }: AddL
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Name */}
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <Laptop className="h-4 w-4 inline mr-1" />
+              Nombre del Equipo (Opcional)
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors border-gray-300"
+              placeholder="Ej: Lap Notaría 1"
+            />
+          </div>
+
           {/* Brand */}
           <div>
             <label htmlFor="brand" className="block text-sm font-medium text-gray-700 mb-2">

@@ -13,6 +13,7 @@ interface EditLaptopModalProps {
 
 export default function EditLaptopModal({ laptop, onUpdate, onClose, existingLaptops }: EditLaptopModalProps) {
   const [formData, setFormData] = useState({
+    name: laptop.name || '',
     brand: laptop.brand,
     model: laptop.model,
     serialNumber: laptop.serialNumber,
@@ -62,6 +63,7 @@ export default function EditLaptopModal({ laptop, onUpdate, onClose, existingLap
       setIsLoading(true);
       
       const updatedLaptop = await laptopService.updateLaptop(laptop.id, {
+        name: formData.name.trim() || null,
         brand: formData.brand,
         model: formData.model,
         serialNumber: formData.serialNumber,
@@ -115,6 +117,22 @@ export default function EditLaptopModal({ laptop, onUpdate, onClose, existingLap
                 <p className="text-sm text-gray-500">ID del equipo</p>
               </div>
             </div>
+          </div>
+
+          {/* Name */}
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+              <Laptop className="h-4 w-4 inline mr-1" />
+              Nombre del Equipo (Opcional)
+            </label>
+            <input
+              type="text"
+              id="name"
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors border-gray-300"
+              placeholder="Ej: Lap Notaría 1"
+            />
           </div>
 
           {/* Brand */}

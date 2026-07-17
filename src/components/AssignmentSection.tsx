@@ -121,7 +121,7 @@ export default function AssignmentSection({ laptops, onDataChange }: AssignmentS
               <option value="">Selecciona una laptop...</option>
               {availableLaptops.map((laptop) => (
                 <option key={laptop.id} value={laptop.id}>
-                  {laptop.id} - {laptop.brand} {laptop.model}
+                  {laptop.id} - {laptop.name || `${laptop.brand} ${laptop.model}`}
                 </option>
               ))}
             </select>
@@ -214,11 +214,11 @@ export default function AssignmentSection({ laptops, onDataChange }: AssignmentS
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center">
                     <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center mr-3">
-                    {laptop.id} - {laptop.brand} {laptop.model} ({laptop.status || 'disponible'})
+                    {laptop.id} - {laptop.name || `${laptop.brand} ${laptop.model}`} ({laptop.status || 'disponible'})
                     </div>
                     <div>
                       <h5 className="font-semibold text-gray-900">{laptop.id}</h5>
-                      <p className="text-sm text-gray-600">{laptop.brand} {laptop.model}</p>
+                      <p className="text-sm text-gray-600">{laptop.name || `${laptop.brand} ${laptop.model}`}</p>
                     </div>
                   </div>
                   <button

@@ -102,7 +102,7 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
     onDataChange();
   };
 
-  const handleAssignSubmit = async (laptopId: string, userName: string, biometricSerial?: string, internName?: string) => {
+  const handleAssignSubmit = async (laptopId: string, userName: string, biometricSerial?: string, internName?: string, includesModem?: boolean, includesModemCable?: boolean) => {
     try {
       let finalInternName = internName;
       if (internName) {
@@ -114,7 +114,7 @@ export default function LaptopManagement({ laptops, setLaptops, onDataChange }: 
         }
       }
 
-      const updatedLaptop = await laptopService.assignLaptop(laptopId, userName, biometricSerial, finalInternName);
+      const updatedLaptop = await laptopService.assignLaptop(laptopId, userName, biometricSerial, finalInternName, includesModem, includesModemCable);
       setLaptops(prev => prev.map(laptop => 
         laptop.id === laptopId ? updatedLaptop : laptop
       ));

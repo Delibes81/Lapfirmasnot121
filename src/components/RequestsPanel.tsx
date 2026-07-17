@@ -68,12 +68,12 @@ export default function RequestsPanel({ laptops, onLaptopsChanged }: RequestsPan
     }
   };
 
-  const handleApproveAction = async (laptopId: string, userName: string, biometricSerial?: string, internName?: string) => {
+  const handleApproveAction = async (laptopId: string, userName: string, biometricSerial?: string, internName?: string, includesModem?: boolean, includesModemCable?: boolean) => {
     if (!selectedRequestToApprove) return;
     
     try {
       // 1. Assign laptop
-      await laptopService.assignLaptop(laptopId, userName, biometricSerial, internName);
+      await laptopService.assignLaptop(laptopId, userName, biometricSerial, internName, includesModem, includesModemCable);
       
       // 2. Mark request as approved
       await requestService.updateRequestStatus(selectedRequestToApprove.id, 'aprobada');
@@ -179,7 +179,7 @@ export default function RequestsPanel({ laptops, onLaptopsChanged }: RequestsPan
                               </span>
                             )}
                           </div>
-                          <p className="text-xs font-medium text-gray-500">{targetLaptop.brand} {targetLaptop.model}</p>
+                          <p className="text-xs font-medium text-gray-500">{targetLaptop.name || `${targetLaptop.brand} ${targetLaptop.model}`}</p>
                         </div>
                       ) : (
                         <div className="bg-red-50 text-red-600 p-3 rounded-xl mb-4 text-xs font-bold flex items-center border border-red-100">

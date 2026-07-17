@@ -1,5 +1,5 @@
 import React from 'react';
-import { Laptop, Grid3X3, List, BarChart3, User, Fingerprint, CheckCircle, Clock, Settings, Search, Send } from 'lucide-react';
+import { Laptop as LaptopIcon, Grid3X3, List, BarChart3, User, Fingerprint, CheckCircle, Clock, Settings, Search, Send, Wifi } from 'lucide-react';
 import { Laptop as LaptopType } from '../types';
 import RequestLaptopModal from './RequestLaptopModal';
 
@@ -25,6 +25,7 @@ export default function PublicView({ laptops }: PublicViewProps) {
 
   const filteredLaptops = visibleLaptops
     .filter(laptop =>
+      laptop.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       laptop.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
       laptop.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
       laptop.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -70,7 +71,7 @@ export default function PublicView({ laptops }: PublicViewProps) {
       case 'mantenimiento':
         return <Settings className="h-3 w-3" />;
       default:
-        return <Laptop className="h-3 w-3" />;
+        return <LaptopIcon className="h-3 w-3" />;
     }
   };
 
@@ -158,7 +159,7 @@ export default function PublicView({ laptops }: PublicViewProps) {
             <div className="absolute -right-4 -top-4 w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-full blur-xl group-hover:bg-blue-100 transition-colors"></div>
             <div className="relative z-10 flex flex-col h-full justify-between">
               <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/30 mb-2">
-                <Laptop className="h-5 w-5 text-white" />
+                <LaptopIcon className="h-5 w-5 text-white" />
               </div>
               <div>
                 <p className="text-xs font-semibold text-gray-500 mb-0.5">Total Equipos</p>
@@ -310,7 +311,7 @@ export default function PublicView({ laptops }: PublicViewProps) {
                   {/* Header Row */}
                   <div className="flex justify-between items-start mb-4 relative z-10">
                     <div className={`w-10 h-10 bg-gradient-to-br ${getStatusColor(laptop.status)} rounded-xl flex items-center justify-center shadow-md group-hover:scale-105 transition-transform duration-300`}>
-                      <Laptop className="h-5 w-5 text-white" />
+                      <LaptopIcon className="h-5 w-5 text-white" />
                     </div>
                     <div className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ring-1 ring-inset ${getStatusBadgeStyle(laptop.status)}`}>
                       {getStatusIcon(laptop.status)}
@@ -321,10 +322,12 @@ export default function PublicView({ laptops }: PublicViewProps) {
                   {/* Identifier & Model */}
                   <div className="mb-4 relative z-10">
                     <h3 className="text-lg font-black text-gray-900 tracking-tight group-hover:text-notaria-700 transition-colors">
-                      {laptop.id}
+                      {laptop.name ? laptop.name : laptop.id}
                     </h3>
                     <p className="text-xs font-medium text-gray-500 mt-0.5">
-                      {laptop.brand} <span className="text-gray-300 mx-1">•</span> {laptop.model}
+                      {laptop.name ? <span className="font-mono bg-gray-100 px-1 py-0.5 rounded mr-1">{laptop.id}</span> : null}
+                      {laptop.name ? <span className="mx-1 text-gray-300">•</span> : null}
+                      {laptop.brand} {laptop.model}
                     </p>
                   </div>
 
@@ -336,6 +339,14 @@ export default function PublicView({ laptops }: PublicViewProps) {
                       <span className="text-[10px] font-bold text-gray-500 uppercase shrink-0 bg-gray-100/80 px-1.5 py-0.5 rounded mr-2">SN</span>
                       <span className="font-mono text-xs font-bold text-gray-800 truncate">{laptop.serialNumber}</span>
                     </div>
+
+                    {/* Default Biometric Line */}
+                    {laptop.defaultBiometric && (
+                      <div className="flex items-center p-2 rounded-lg bg-white/60 border border-gray-100 shadow-sm group-hover:bg-white transition-colors mt-1.5 mb-1.5">
+                        <span className="text-[10px] font-bold text-gray-500 uppercase shrink-0 bg-gray-100/80 px-1.5 py-0.5 rounded mr-2" title="Biométrico por defecto"><Fingerprint className="h-3 w-3 inline mr-1" />Def</span>
+                        <span className="font-mono text-xs font-bold text-gray-800 truncate">{laptop.defaultBiometric}</span>
+                      </div>
+                    )}
 
                     {laptop.currentUser && (
                       <div className="flex items-center p-2 rounded-lg bg-gradient-to-r from-notaria-50/50 to-white border border-notaria-100/50 shadow-sm mb-1.5">
@@ -369,6 +380,19 @@ export default function PublicView({ laptops }: PublicViewProps) {
                           <Fingerprint className="h-3.5 w-3.5" />
                         </div>
                         <span className="font-mono text-xs font-bold text-teal-900 truncate" title={laptop.biometricSerial}>{laptop.biometricSerial}</span>
+                      </div>
+                    )}
+
+                    {/* Modem Accessories */}
+                    {(laptop.includesModem || laptop.includesModemCable) && laptop.status === 'en-uso' && (
+                      <div className="flex items-center p-2 rounded-lg bg-gradient-to-r from-blue-50/50 to-white border border-blue-100/50 shadow-sm">
+                        <div className="w-6 h-6 rounded bg-blue-100 text-blue-600 flex items-center justify-center shrink-0 mr-2">
+                          <Wifi className="h-3.5 w-3.5" />
+                        </div>
+                        <div className="flex gap-1.5 overflow-hidden">
+                          {laptop.includesModem && <span className="text-[10px] font-bold text-blue-700 bg-blue-100/50 px-1.5 py-0.5 rounded border border-blue-200 truncate">Módem</span>}
+                          {laptop.includesModemCable && <span className="text-[10px] font-bold text-blue-700 bg-blue-100/50 px-1.5 py-0.5 rounded border border-blue-200 truncate">Cable</span>}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -428,7 +452,7 @@ export default function PublicView({ laptops }: PublicViewProps) {
                       <td className="py-3 px-5">
                         <div className="flex items-center">
                           <div className={`w-8 h-8 bg-gradient-to-br ${getStatusColor(laptop.status)} rounded-lg flex items-center justify-center mr-3 shadow-sm group-hover:scale-105 transition-transform`}>
-                            <Laptop className="h-4 w-4 text-white" />
+                            <LaptopIcon className="h-4 w-4 text-white" />
                           </div>
                           <span className="font-extrabold text-gray-900 text-sm">{laptop.id}</span>
                         </div>
@@ -470,6 +494,12 @@ export default function PublicView({ laptops }: PublicViewProps) {
                               <Fingerprint className="w-3 h-3 mr-1" />
                               {laptop.biometricSerial}
                             </span>
+                          )}
+                          {(laptop.includesModem || laptop.includesModemCable) && laptop.status === 'en-uso' && (
+                            <div className="flex gap-1 mt-1">
+                              {laptop.includesModem && <span className="text-[9px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-1 rounded">Módem</span>}
+                              {laptop.includesModemCable && <span className="text-[9px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-1 rounded">Cable</span>}
+                            </div>
                           )}
                         </div>
                       </td>

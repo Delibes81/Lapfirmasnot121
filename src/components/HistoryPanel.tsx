@@ -89,7 +89,7 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
   };
 
   const exportToCSV = () => {
-    const headers = ['Laptop', 'Usuario', 'Pasante', 'Biométrico', 'Fecha Asignación', 'Fecha Devolución', 'Duración', 'Estado'];
+    const headers = ['Laptop', 'Usuario', 'Pasante', 'Biométrico', 'Fecha Asignación', 'Fecha Devolución', 'Duración', 'Estado', 'Incluye Módem', 'Incluye Cable'];
     const csvData = filteredAndSortedAssignments.map(assignment => {
       return [
         assignment.laptopId,
@@ -99,7 +99,9 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
         formatDate(assignment.assignedAt),
         assignment.returnedAt ? formatDate(assignment.returnedAt) : 'En uso',
         calculateDuration(assignment.assignedAt, assignment.returnedAt),
-        assignment.returnedAt ? 'Devuelto' : 'En uso'
+        assignment.returnedAt ? 'Devuelto' : 'En uso',
+        assignment.includesModem ? 'Sí' : 'No',
+        assignment.includesModemCable ? 'Sí' : 'No'
       ];
     });
 
@@ -269,7 +271,7 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
                             {assignment.laptopId}
                           </div>
                           <div className="text-xs font-medium text-gray-500">
-                            {laptop?.brand} {laptop?.model}
+                            {laptop?.name || `${laptop?.brand} ${laptop?.model}`}
                           </div>
                         </div>
                       </div>
@@ -299,6 +301,13 @@ export default function HistoryPanel({ laptops, assignments }: HistoryPanelProps
                         )}
                         {(!assignment.userName || assignment.userName === 'Asignación Temporal') && !assignment.assignedIntern && (
                           <span className="text-xs text-gray-400 font-medium">-</span>
+                        )}
+                        
+                        {(assignment.includesModem || assignment.includesModemCable) && (
+                          <div className="flex items-center mt-1 space-x-1.5">
+                            {assignment.includesModem && <span className="text-[10px] bg-blue-50 text-blue-600 border border-blue-100 px-1.5 py-0.5 rounded font-bold">Módem</span>}
+                            {assignment.includesModemCable && <span className="text-[10px] bg-blue-50 text-blue-600 border border-blue-100 px-1.5 py-0.5 rounded font-bold">Cable</span>}
+                          </div>
                         )}
                       </div>
                     </td>

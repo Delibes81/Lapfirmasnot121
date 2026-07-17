@@ -5,7 +5,7 @@ import { Laptop, Lawyer, BiometricDevice, Pasante } from '../types';
 interface AssignmentModalProps {
   laptop: Laptop;
   isReturning: boolean;
-  onAssign: (laptopId: string, userName: string, biometricSerial?: string, internName?: string) => void;
+  onAssign: (laptopId: string, userName: string, biometricSerial?: string, internName?: string, includesModem?: boolean, includesModemCable?: boolean) => void;
   onReturn: (laptopId: string) => void;
   onClose: () => void;
   existingLawyers: Lawyer[];
@@ -30,6 +30,8 @@ export default function AssignmentModal({
   const [selectedUser, setSelectedUser] = useState(initialSelectedUser || '');
   const [selectedBiometric, setSelectedBiometric] = useState(laptop.defaultBiometric || '');
   const [internName, setInternName] = useState(initialInternName || '');
+  const [includesModem, setIncludesModem] = useState(false);
+  const [includesModemCable, setIncludesModemCable] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +43,7 @@ export default function AssignmentModal({
         // If neither user nor intern is fully selected, we shouldn't submit, but
         // if only internName is present, default userName to "Asignado a Pasante" to pass db constraint.
         const fallbackUserName = selectedUser ? selectedUser : "Asignación Temporal";
-        onAssign(laptop.id, fallbackUserName, selectedBiometric || undefined, internName || undefined);
+        onAssign(laptop.id, fallbackUserName, selectedBiometric || undefined, internName || undefined, includesModem, includesModemCable);
       }
     }
   };
@@ -83,7 +85,7 @@ export default function AssignmentModal({
               </div>
               <div>
                 <h3 className="font-medium text-gray-900">{laptop.id}</h3>
-                <p className="text-sm text-gray-500">{laptop.brand} {laptop.model}</p>
+                <p className="text-sm text-gray-500">{laptop.name || `${laptop.brand} ${laptop.model}`}</p>
               </div>
             </div>
             {laptop.currentUser && (
@@ -168,6 +170,31 @@ export default function AssignmentModal({
                     </option>
                   ))}
                 </select>
+              </div>
+
+              {/* Modem and Cable Checkboxes */}
+              <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                <p className="text-sm font-medium text-gray-700 mb-3">Accesorios adicionales</p>
+                <div className="flex flex-col space-y-3">
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={includesModem}
+                      onChange={(e) => setIncludesModem(e.target.checked)}
+                      className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-gray-800">Módem</span>
+                  </label>
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={includesModemCable}
+                      onChange={(e) => setIncludesModemCable(e.target.checked)}
+                      className="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                    />
+                    <span className="text-sm font-medium text-gray-800">Cable de Módem</span>
+                  </label>
+                </div>
               </div>
             </>
           ) : (

@@ -130,7 +130,7 @@ export default function RequestLaptopModal({
               >
                 {availableLaptops.map(laptop => (
                   <option key={laptop.id} value={laptop.id}>
-                    {laptop.id} - {laptop.brand} {laptop.model}
+                    {laptop.id} - {laptop.name || `${laptop.brand} ${laptop.model}`}
                   </option>
                 ))}
               </select>

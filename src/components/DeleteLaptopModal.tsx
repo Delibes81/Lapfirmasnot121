@@ -51,7 +51,7 @@ export default function DeleteLaptopModal({ laptop, onConfirm, onClose }: Delete
               </div>
               <div>
                 <h3 className="font-medium text-gray-900">{laptop.id}</h3>
-                <p className="text-sm text-gray-500">{laptop.brand} {laptop.model}</p>
+                <p className="text-sm text-gray-500">{laptop.name || `${laptop.brand} ${laptop.model}`}</p>
               </div>
             </div>
             <div className="text-sm text-gray-600">

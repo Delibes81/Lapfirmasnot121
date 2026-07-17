@@ -8,6 +8,8 @@ const mapAssignmentFromDB = (dbAssignment: any): Assignment => ({
   userName: dbAssignment.user_name,
   assignedIntern: dbAssignment.assigned_intern,
   biometricSerial: dbAssignment.biometric_serial,
+  includesModem: dbAssignment.includes_modem,
+  includesModemCable: dbAssignment.includes_modem_cable,
   assignedAt: dbAssignment.assigned_at,
   returnedAt: dbAssignment.returned_at,
   createdAt: dbAssignment.created_at,
@@ -37,6 +39,8 @@ export const assignmentService = {
     userName: string;
     assignedIntern?: string;
     biometricSerial?: string;
+    includesModem?: boolean;
+    includesModemCable?: boolean;
   }): Promise<Assignment> {
     const { data, error } = await supabase
       .from('assignments')
@@ -44,7 +48,9 @@ export const assignmentService = {
         laptop_id: assignment.laptopId,
         user_name: assignment.userName,
         assigned_intern: assignment.assignedIntern || null,
-        biometric_serial: assignment.biometricSerial || null
+        biometric_serial: assignment.biometricSerial || null,
+        includes_modem: assignment.includesModem || false,
+        includes_modem_cable: assignment.includesModemCable || false
       })
       .select()
       .single();

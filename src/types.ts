@@ -1,5 +1,6 @@
 export interface Laptop {
   id: string;
+  name?: string | null;
   brand: string;
   model: string;
   serialNumber: string;
@@ -9,6 +10,8 @@ export interface Laptop {
   biometricSerial: string | null;
   assignedAt: string | null;
   defaultBiometric?: string | null;
+  includesModem?: boolean;
+  includesModemCable?: boolean;
   isPublic?: boolean;
   createdAt: string;
   updatedAt: string;
@@ -43,6 +46,8 @@ export interface Assignment {
   biometricSerial: string | null;
   assignedAt: string;
   returnedAt: string | null;
+  includesModem?: boolean;
+  includesModemCable?: boolean;
   createdAt: string;
   updatedAt: string;
 }

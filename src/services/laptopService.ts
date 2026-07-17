@@ -5,6 +5,7 @@ import { assignmentService } from './assignmentService';
 // Convertir datos de Supabase a tipos de la aplicación
 const mapLaptopFromDB = (dbLaptop: any): Laptop => ({
   id: dbLaptop.id,
+  name: dbLaptop.name,
   brand: dbLaptop.brand,
   model: dbLaptop.model,
   serialNumber: dbLaptop.serial_number,
@@ -13,6 +14,8 @@ const mapLaptopFromDB = (dbLaptop: any): Laptop => ({
   assignedIntern: dbLaptop.assigned_intern,
   biometricSerial: dbLaptop.biometric_serial,
   defaultBiometric: dbLaptop.default_biometric,
+  includesModem: dbLaptop.includes_modem,
+  includesModemCable: dbLaptop.includes_modem_cable,
   assignedAt: dbLaptop.assigned_at,
   isPublic: dbLaptop.is_public ?? true,
   createdAt: dbLaptop.created_at,
@@ -38,6 +41,7 @@ export const laptopService = {
 
   // Crear nueva laptop
   async createLaptop(laptop: { 
+    name?: string;
     brand: string; 
     model: string; 
     serialNumber: string;
@@ -51,6 +55,7 @@ export const laptopService = {
       .from('laptops')
       .insert({
         id: laptopId,
+        name: laptop.name || null,
         brand: laptop.brand,
         model: laptop.model,
         serial_number: laptop.serialNumber,
@@ -76,6 +81,7 @@ export const laptopService = {
     
     const dbUpdates: any = {};
     
+    if (updates.name !== undefined) dbUpdates.name = updates.name;
     if (updates.brand !== undefined) dbUpdates.brand = updates.brand;
     if (updates.model !== undefined) dbUpdates.model = updates.model;
     if (updates.serialNumber !== undefined) dbUpdates.serial_number = updates.serialNumber;
@@ -121,7 +127,7 @@ export const laptopService = {
     }
   },
   // Asignar laptop a usuario
-  async assignLaptop(id: string, userName: string, biometricSerial?: string, assignedIntern?: string | null): Promise<Laptop> {
+  async assignLaptop(id: string, userName: string, biometricSerial?: string, assignedIntern?: string | null, includesModem?: boolean, includesModemCable?: boolean): Promise<Laptop> {
     // Normalizar el ID para evitar problemas de espacios y mayúsculas/minúsculas
     const normalizedId = id.trim().toUpperCase();
     
@@ -134,6 +140,8 @@ export const laptopService = {
           assigned_user: userName,
           assigned_intern: assignedIntern || null,
           biometric_serial: biometricSerial || null,
+          includes_modem: includesModem || false,
+          includes_modem_cable: includesModemCable || false,
           assigned_at: new Date().toISOString()
         })
         .eq('id', normalizedId)
@@ -153,7 +161,9 @@ export const laptopService = {
         laptopId: normalizedId,
         userName,
         assignedIntern: assignedIntern || undefined,
-        biometricSerial
+        biometricSerial,
+        includesModem,
+        includesModemCable
       });
 
       return mapLaptopFromDB(data[0]);
@@ -180,6 +190,8 @@ export const laptopService = {
           assigned_user: null,
           assigned_intern: null,
           biometric_serial: null,
+          includes_modem: false,
+          includes_modem_cable: false,
           assigned_at: null
         })
         .eq('id', normalizedId)
@@ -222,6 +234,8 @@ export const laptopService = {
       updateData.assigned_user = null;
       updateData.assigned_intern = null;
       updateData.biometric_serial = null;
+      updateData.includes_modem = false;
+      updateData.includes_modem_cable = false;
       updateData.assigned_at = null;
     }
 
