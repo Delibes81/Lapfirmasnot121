@@ -1,0 +1,26 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    # Se ejecuta a las 00:00 UTC cada 5 días
+    - cron: '0 0 */5 * *'
+  workflow_dispatch: # Permite probar el script manualmente desde la pestaña "Actions" en GitHub
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Hacer consulta de prueba a Supabase
+        run: |
+          echo "Realizando petición a Supabase para evitar inactividad..."
+          HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/laptops?select=id&limit=1" \
+          -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+          -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}")
+          
+          if [ "$HTTP_STATUS" -eq 200 ]; then
+            echo "¡Petición enviada con éxito! Estado: $HTTP_STATUS"
+          else
+            echo "La petición falló con estado HTTP: $HTTP_STATUS"
+            exit 1
+          fi
